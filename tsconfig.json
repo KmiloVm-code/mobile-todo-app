@@ -1,0 +1,88 @@
+{
+  "compilerOptions": {
+    // Target & Module
+    "target": "ES2022",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    
+    // JavaScript Support
+    "allowJs": true,
+    "checkJs": false,
+    
+    // Emit
+    "noEmit": true,
+    "incremental": true,
+    
+    // Interop Constraints
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    
+    // Language and Environment
+    "jsx": "preserve",
+    "jsxImportSource": "react",
+    
+    // Type Checking - Strict Mode
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": false,
+    
+    // Error Checking
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": false,
+    
+    // Modules
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": false,
+    
+    // Performance
+    "skipLibCheck": true,
+    
+    // Completeness
+    "skipDefaultLibCheck": true,
+    
+    // Plugins
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    
+    // Path Mapping
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "@/types": ["./types"],
+      "@/types/*": ["./types/*"],
+      "@/components/*": ["./components/*"],
+      "@/context/*": ["./context/*"],
+      "@/hooks/*": ["./hooks/*"],
+      "@/lib/*": ["./lib/*"],
+      "@/styles/*": ["./styles/*"],
+      "@/public/*": ["./public/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts", 
+    "**/*.ts", 
+    "**/*.tsx", 
+    ".next/types/**/*.ts",
+    "types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    ".next",
+    "out",
+    "dist",
+    "build"
+  ]
+}
