@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import UserMenu from "@/components/layout/user-menu";
-import type { User } from "@/types/auth";
+import type { User } from "@/types";
 
 interface TaskHeaderProps {
   user: User | null;

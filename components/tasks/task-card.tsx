@@ -56,19 +56,20 @@ export function TaskCard({
   onCancelEdit,
 }: TaskCardProps) {
   const isOverdue = (task: Task) => {
-    if (!task.endDate || task.completed) return false;
-    const [year, month, day] = task.endDate.split("-").map(Number);
-    if (!year || !month || !day) return false;
-    const taskDate = new Date(year, month - 1, day);
+    if (!task.endDate || task.status === "completed") return false;
+    // Compara la fecha de vencimiento con la fecha actual
+    const endDate = new Date(task.endDate);
     const today = new Date();
+    // Eliminar la hora para comparar solo fechas
+    endDate.setHours(0, 0, 0, 0);
     today.setHours(0, 0, 0, 0);
-    return taskDate < today;
+    return endDate < today;
   };
 
   return (
     <Card
       className={`border-0 shadow-lg rounded-2xl transition-all duration-200 hover:shadow-xl ${
-        task.completed
+        task.status === "completed"
           ? "bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 opacity-75"
           : "bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm hover:bg-white dark:hover:bg-slate-800"
       }`}
@@ -79,12 +80,12 @@ export function TaskCard({
             onClick={onToggle}
             className="mt-1 transition-all duration-200 hover:scale-110"
             aria-label={
-              task.completed
+              task.status === "completed"
                 ? "Marcar como pendiente"
                 : "Marcar como completada"
             }
           >
-            {task.completed ? (
+            {task.status === "completed" ? (
               <CheckCircle2 className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />
             ) : (
               <Circle className="w-6 h-6 text-slate-400 dark:text-slate-500 hover:text-purple-500 dark:hover:text-purple-400" />
@@ -93,7 +94,7 @@ export function TaskCard({
           <div className="flex-1 min-w-0">
             <h3
               className={`font-bold text-lg ${
-                task.completed
+                task.status === "completed"
                   ? "line-through text-slate-500 dark:text-slate-400"
                   : "text-slate-800 dark:text-slate-100"
               }`}
@@ -103,7 +104,7 @@ export function TaskCard({
             {task.description && (
               <p
                 className={`text-sm mt-2 leading-relaxed ${
-                  task.completed
+                  task.status === "completed"
                     ? "text-slate-400 dark:text-slate-500"
                     : "text-slate-600 dark:text-slate-300"
                 }`}
@@ -159,72 +160,72 @@ export function TaskCard({
                 </Badge>
               )}
             </div>
-          </div>
-          <div className="flex gap-1">
-            <Dialog
-              open={isEditing}
-              onOpenChange={(open) => !open && onCancelEdit()}
-            >
-              <DialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-10 w-10 rounded-xl hover:bg-purple-100 dark:hover:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-all duration-200"
-                  onClick={onEdit}
-                  aria-label="Editar tarea"
-                >
-                  <Edit2 className="w-4 h-4" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="w-[95vw] max-w-md rounded-2xl border-0 shadow-2xl bg-white dark:bg-slate-900">
-                <DialogHeader className="pb-2">
-                  <DialogTitle className="text-2xl font-bold text-slate-800 dark:text-slate-100">
-                    ✏️ Editar Tarea
-                  </DialogTitle>
-                </DialogHeader>
-                <TaskForm
-                  defaultValues={defaultValues}
-                  onSubmit={onUpdate}
-                  onCancel={onCancelEdit}
-                  isEdit
-                />
-              </DialogContent>
-            </Dialog>
-
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-10 w-10 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/30 text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-all duration-200"
-                  aria-label="Eliminar tarea"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent className="rounded-2xl">
-                <AlertDialogHeader>
-                  <AlertDialogTitle className="text-xl font-bold text-slate-800 dark:text-slate-100">
-                    🗑️ ¿Eliminar tarea?
-                  </AlertDialogTitle>
-                  <AlertDialogDescription className="text-slate-600 dark:text-slate-300">
-                    ¿Estás seguro de que quieres eliminar "{task.title}"? Esta
-                    acción no se puede deshacer.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel className="rounded-xl">
-                    Cancelar
-                  </AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={onDelete}
-                    className="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 rounded-xl"
+            <div className="flex gap-1 justify-end">
+              <Dialog
+                open={isEditing}
+                onOpenChange={(open) => !open && onCancelEdit()}
+              >
+                <DialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-10 w-10 rounded-xl hover:bg-purple-100 dark:hover:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-all duration-200"
+                    onClick={onEdit}
+                    aria-label="Editar tarea"
                   >
-                    Eliminar
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+                    <Edit2 className="w-4 h-4" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="w-[95vw] max-w-md rounded-2xl border-0 shadow-2xl bg-white dark:bg-slate-900">
+                  <DialogHeader className="pb-2">
+                    <DialogTitle className="text-2xl font-bold text-slate-800 dark:text-slate-100">
+                      ✏️ Editar Tarea
+                    </DialogTitle>
+                  </DialogHeader>
+                  <TaskForm
+                    defaultValues={defaultValues}
+                    onSubmit={onUpdate}
+                    onCancel={onCancelEdit}
+                    isEdit
+                  />
+                </DialogContent>
+              </Dialog>
+
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-10 w-10 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/30 text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-all duration-200"
+                    aria-label="Eliminar tarea"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="rounded-2xl">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="text-xl font-bold text-slate-800 dark:text-slate-100">
+                      🗑️ ¿Eliminar tarea?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription className="text-slate-600 dark:text-slate-300">
+                      ¿Estás seguro de que quieres eliminar "{task.title}"? Esta
+                      acción no se puede deshacer.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="rounded-xl">
+                      Cancelar
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={onDelete}
+                      className="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 rounded-xl"
+                    >
+                      Eliminar
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
           </div>
         </div>
       </CardContent>

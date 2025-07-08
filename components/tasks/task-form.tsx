@@ -21,6 +21,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { taskFormSchema, type TaskFormData } from "@/lib/validations/task-form";
+import { formatTaskDate } from "@/lib/utils/formatters";
 
 interface TaskFormProps {
   defaultValues?: Partial<TaskFormData>;
@@ -29,6 +30,8 @@ interface TaskFormProps {
   isEdit?: boolean;
   isLoading?: boolean;
 }
+
+const userId = "32b4ad11-c821-4cb1-83e0-0d7bc9fe6e22";
 
 export function TaskForm({
   defaultValues,
@@ -40,18 +43,15 @@ export function TaskForm({
   const form = useForm<TaskFormData>({
     resolver: zodResolver(taskFormSchema),
     defaultValues: {
+      userId: userId,
       title: "",
       description: "",
-      startDate: "",
+      startDate: formatTaskDate(new Date()) || "",
       endDate: "",
       priority: "medium",
       ...defaultValues,
     },
   });
-
-  const handleSubmit = (data: TaskFormData) => {
-    onSubmit(data);
-  };
 
   const priorityOptions = [
     { value: "low", label: "🟢 Baja", emoji: "🟢" },
@@ -59,6 +59,18 @@ export function TaskForm({
     { value: "high", label: "🔴 Alta", emoji: "🔴" },
     { value: "urgent", label: "🚨 Urgente", emoji: "🚨" },
   ] as const;
+
+  const handleSubmit = (data: TaskFormData) => {
+    console.log("Submitting task data:", data);
+    if (isLoading) return;
+    onSubmit({
+      ...data,
+      userId,
+    });
+    if (!isEdit) {
+      form.reset();
+    }
+  };
 
   return (
     <Form {...form}>

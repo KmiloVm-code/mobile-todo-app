@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,21 +9,27 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { useAuth } from "@/context/auth-context";
-import { useTasks } from "@/hooks/use-tasks";
-import { TaskHeader, TaskForm, TaskCard, TaskTabs } from "@/components/tasks";
+import { TaskForm, TaskCard, TaskTabs } from "@/components/tasks";
 import type { TaskFormData } from "@/lib/validations/task-form";
 
-export function TodoApp() {
-  const { user } = useAuth();
+import { useState } from "react";
+import { Task } from "@/types";
+import {
+  createdTask,
+  editedTask,
+  deleteTask,
+  completeTask,
+} from "@/lib/actions";
+import { formatTaskDate } from "@/lib/utils/formatters";
 
+export function TodoApp({ tasks }: { tasks: Task[] }) {
   // Usar el hook existente para manejar las tareas
-  const taskManager = useTasks();
-
   // Estado para las pestañas
   const [activeTab, setActiveTab] = useState<"all" | "pending" | "completed">(
-    (user?.preferences?.defaultView as "all" | "pending" | "completed") || "all"
+    "all"
   );
+  //   (user?.preferences?.defaultView as "all" | "pending" | "completed") || "all"
+  // );
 
   // Estado para diálogos
   const [isAddingTask, setIsAddingTask] = useState(false);
@@ -37,55 +42,80 @@ export function TodoApp() {
   const getFilteredTasks = () => {
     switch (activeTab) {
       case "pending":
-        return taskManager.tasks.filter((task) => !task.completed);
+        return tasks.filter((task) => task.status !== "completed");
       case "completed":
-        return taskManager.tasks.filter((task) => task.completed);
+        return tasks.filter((task) => task.status === "completed");
       default:
-        return taskManager.tasks;
+        return tasks;
     }
   };
 
   const filteredTasks = getFilteredTasks();
-  const pendingTasksCount = taskManager.pendingTasks;
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab as "all" | "pending" | "completed");
   };
 
   // Manejar envío del formulario de agregar tarea
-  const handleAddTask = (data: TaskFormData) => {
-    taskManager.addTask(data);
-    setIsAddingTask(false);
-    toast.success("✨ ¡Tarea creada exitosamente!", {
-      description: `"${data.title}" ha sido agregada a tu lista de tareas.`,
-    });
+  const handleAddTask = async (data: TaskFormData) => {
+    setIsAddingTask(true);
+    await createdTask(data)
+      .then(() => {
+        toast.success("🎉 ¡Tarea agregada!", {
+          description: `La tarea "${data.title}" ha sido creada.`,
+        });
+      })
+      .catch((error) => {
+        console.error("Error al agregar tarea:", error);
+        toast.error("❌ Error al agregar la tarea", {
+          description: "Por favor, inténtalo de nuevo más tarde.",
+        });
+      })
+      .finally(() => {
+        setIsAddingTask(false);
+        setEditingTaskId(null);
+        setEditingTaskData(undefined);
+      });
   };
 
   // Manejar envío del formulario de editar tarea
-  const handleUpdateTask = (data: TaskFormData) => {
+  const handleUpdateTask = async (data: TaskFormData) => {
+    console.log("Updating task with data:", data);
     if (editingTaskId) {
-      taskManager.updateTask(editingTaskId, data);
-      setEditingTaskId(null);
-      setEditingTaskData(undefined);
-      toast.success("🔄 ¡Tarea actualizada!", {
-        description: `Los cambios en "${data.title}" han sido guardados.`,
-      });
+      await editedTask(editingTaskId, data)
+        .then(() => {
+          toast.success("🔄 ¡Tarea actualizada!", {
+            description: `Los cambios en "${data.title}" han sido guardados.`,
+          });
+        })
+        .catch((error) => {
+          console.error("Error al actualizar tarea:", error);
+          toast.error("❌ Error al actualizar la tarea", {
+            description: "Por favor, inténtalo de nuevo más tarde.",
+          });
+        })
+        .finally(() => {
+          setEditingTaskId(null);
+          setEditingTaskData(undefined);
+        });
     }
   };
 
   // Abrir diálogo de edición
   const handleEditTask = (taskId: string) => {
-    const task = taskManager.tasks.find((t) => t.id === taskId);
+    setIsAddingTask(false);
+    const task = tasks.find((t) => t.id === taskId);
     if (task) {
       const taskData: Partial<TaskFormData> = {
         title: task.title,
-        description: task.description,
-        startDate: task.startDate,
-        endDate: task.endDate,
-        priority: task.priority, // Ya es compatible
+        description: task.description || "",
+        priority: task.priority,
+        startDate: formatTaskDate(task.startDate),
+        endDate: formatTaskDate(task.endDate),
       };
-      setEditingTaskData(taskData);
       setEditingTaskId(taskId);
+      setEditingTaskData(taskData);
+      console.log("Editing task data:", taskData);
     }
   };
 
@@ -101,37 +131,52 @@ export function TodoApp() {
   };
 
   // Manejar toggle de tarea con notificación
-  const handleToggleTask = (taskId: string) => {
-    const task = taskManager.tasks.find((t) => t.id === taskId);
+  const handleToggleTask = async (taskId: string) => {
+    const task = tasks.find((t) => t.id === taskId);
     if (task) {
-      taskManager.toggleTask(taskId);
-      if (task.completed) {
-        toast.info("🔄 Tarea marcada como pendiente", {
-          description: `"${task.title}" está de vuelta en tu lista de pendientes.`,
+      const newStatus = task.status === "completed" ? "pending" : "completed";
+      await completeTask(taskId, newStatus)
+        .then(() => {
+          toast.success("✅ Tarea actualizada", {
+            description: `La tarea "${task.title}" ha sido marcada como ${newStatus}.`,
+          });
+        })
+        .catch((error) => {
+          console.error("Error al actualizar tarea:", error);
+          toast.error("❌ Error al actualizar la tarea", {
+            description: "Por favor, inténtalo de nuevo más tarde.",
+          });
         });
-      } else {
-        toast.success("🎉 ¡Tarea completada!", {
-          description: `¡Felicidades! Has completado "${task.title}".`,
-        });
-      }
     }
   };
 
   // Manejar eliminación de tarea con notificación
-  const handleDeleteTask = (taskId: string) => {
-    const task = taskManager.tasks.find((t) => t.id === taskId);
+  const handleDeleteTask = async (taskId: string) => {
+    const task = tasks.find((t) => t.id === taskId);
     if (task) {
-      taskManager.deleteTask(taskId);
-      toast.error("🗑️ Tarea eliminada", {
-        description: `"${task.title}" ha sido eliminada de tu lista.`,
-      });
+      await deleteTask(taskId)
+        .then(() => {
+          toast.success("🗑️ Tarea eliminada", {
+            description: `La tarea "${task.title}" ha sido eliminada.`,
+          });
+        })
+        .catch((error) => {
+          console.error("Error al eliminar tarea:", error);
+          toast.error("❌ Error al eliminar la tarea", {
+            description: "Por favor, inténtalo de nuevo más tarde.",
+          });
+        })
+        .finally(() => {
+          setEditingTaskId(null);
+          setEditingTaskData(undefined);
+        });
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pb-20 transition-colors duration-300">
       {/* Header */}
-      <TaskHeader user={user} pendingTasksCount={pendingTasksCount} />
+      {/* <TaskHeader user={user} pendingTasksCount={pendingTasksCount} /> */}
 
       {/* Add Task Button */}
       <div className="p-6">
@@ -156,7 +201,7 @@ export function TodoApp() {
       <TaskTabs
         activeTab={activeTab}
         setActiveTab={handleTabChange}
-        tasks={taskManager.tasks}
+        tasks={tasks}
       >
         {filteredTasks.map((task) => (
           <TaskCard

@@ -27,17 +27,18 @@ export interface TaskTag extends BaseEntity {
 export interface Task extends BaseEntity {
   title: string
   description?: string
-  startDate?: string
-  endDate?: string
-  completed: boolean
-  status: TaskStatus
-  priority: TaskPriority
+  priority: 'low' | 'medium' | 'high' | 'urgent'
+  status: 'pending' | 'in-progress' | 'completed'
+  startDate?: string | Date | null
+  endDate?: string | Date | null
+  userId: string
   categoryId?: ID
   category?: TaskCategory
   tags?: TaskTag[]
-  attachments?: TaskAttachment[]
   subtasks?: Subtask[]
-  userId: ID
+  attachments?: TaskAttachment[]
+  createdAt: string
+  updatedAt: string
 }
 
 /** Subtarea */
@@ -83,6 +84,7 @@ export interface TaskStats {
   inProgress: number
   cancelled: number
   overdue: number
+  dueToday: number
   completionRate: number
 }
 

@@ -18,8 +18,8 @@ export function TaskTabs({
   tasks,
   children,
 }: TaskTabsProps) {
-  const pendingCount = tasks.filter((t) => !t.completed).length;
-  const completedCount = tasks.filter((t) => t.completed).length;
+  const pendingCount = tasks.filter((t) => t.status !== "completed").length;
+  const completedCount = tasks.filter((t) => t.status === "completed").length;
 
   const getEmptyStateContent = () => {
     const configs = {
@@ -104,7 +104,7 @@ export function TaskTabs({
         </TabsList>
 
         <TabsContent value={activeTab} className="mt-6 space-y-4">
-          {React.Children.count(children) === 0 ? (
+          {tasks.length === 0 ? (
             <Card className="border-0 shadow-lg rounded-2xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm">
               <CardContent className="p-12 text-center">
                 <div className="text-6xl mb-4">

@@ -41,8 +41,8 @@ export function filterTasksByPriority(tasks: Task[], priority: TaskPriority): Ta
   return tasks.filter(task => task.priority === priority)
 }
 
-export function filterTasksByCompletion(tasks: Task[], completed: boolean): Task[] {
-  return tasks.filter(task => task.completed === completed)
+export function filterTasksByCompletion(tasks: Task[], status: string): Task[] {
+  return tasks.filter(task => task.status === status)
 }
 
 export function filterTasksByDateRange(
@@ -62,11 +62,14 @@ export function filterOverdueTasks(tasks: Task[]): Task[] {
   today.setHours(0, 0, 0, 0)
   
   return tasks.filter(task => {
-    if (task.completed || !task.endDate) return false
-    const [year, month, day] = task.endDate.split('-').map(Number)
-    if (!year || !month || !day) return false
-    const taskDate = new Date(year, month - 1, day)
-    return taskDate < today
+    if (task.status === "completed" || !task.endDate) return false
+    // Compara la fecha de vencimiento con la fecha actual
+    const endDate = new Date(task.endDate);
+    const today = new Date();
+    // Eliminar la hora para comparar solo fechas
+    endDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+    return endDate < today;
   })
 }
 
@@ -116,7 +119,7 @@ export function groupTasksByDate(tasks: Task[]): Record<string, Task[]> {
   const groups: Record<string, Task[]> = {}
   
   tasks.forEach(task => {
-    const date = task.endDate || task.startDate || task.createdAt.split('T')[0]
+    const date = task.endDate ? new Date(task.endDate).toISOString().split('T')[0] : null
     if (date) {
       if (!groups[date]) {
         groups[date] = []
@@ -131,8 +134,8 @@ export function groupTasksByDate(tasks: Task[]): Record<string, Task[]> {
 // Utilidades de agregación y estadísticas
 export function getTaskStats(tasks: Task[]) {
   const total = tasks.length
-  const completed = tasks.filter(t => t.completed).length
-  const pending = tasks.filter(t => !t.completed).length
+  const completed = tasks.filter(t => t.status === 'completed').length
+  const pending = tasks.filter(t => t.status !== 'completed').length
   const overdue = filterOverdueTasks(tasks).length
   
   const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0
