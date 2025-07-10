@@ -1,7 +1,6 @@
 import { z } from "zod"
 
 export const taskFormSchema = z.object({
-  userId: z.string().min(1, "El ID de usuario es obligatorio"),
   title: z
     .string()
     .min(3, "El título debe tener al menos 3 caracteres")
@@ -37,8 +36,8 @@ export const taskFormSchema = z.object({
       message: "La fecha debe ser una fecha válida en formato YYYY-MM-DD",
     }),
   priority: z.enum(["low", "medium", "high", "urgent"]).default("medium"),
-  categoryId: z.string().optional(),
-  tagIds: z.array(z.string()).optional(),
+  // categoryId: z.string().optional(),
+  // tagIds: z.array(z.string()).optional(),
 }).refine((data) => {
   if (data.endDate && data.startDate) {
     const startDate = new Date(data.startDate)
@@ -70,9 +69,6 @@ export const taskFormDefaultValues: TaskFormData = {
   startDate: "",
   endDate: "",
   priority: "medium",
-  categoryId: undefined,
-  tagIds: [],
-  userId: ""
 }
 
 export function validateTaskFormData(data: Partial<TaskFormData>): TaskFormData {
@@ -85,4 +81,8 @@ export function validateTaskFormData(data: Partial<TaskFormData>): TaskFormData 
 
 export function isTaskFormData(data: any): data is TaskFormData {
   return taskFormSchema.safeParse(data).success
+}
+
+export interface TaskWithUserData extends TaskFormData {
+  userId: string;
 }

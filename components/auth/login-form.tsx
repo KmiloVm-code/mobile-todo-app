@@ -1,41 +1,26 @@
 "use client";
 
-import type React from "react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Eye, EyeOff, Mail, Lock, Sparkles } from "lucide-react";
-import { useAuth } from "@/context/auth-context";
+import { Eye, EyeOff, Mail, Lock, Sparkles, AlertCircle } from "lucide-react";
+import { useActionState } from "react";
+import { authenticate } from "@/lib/actions";
+import { useSearchParams } from "next/navigation";
 
 export function LoginForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
-  const { login, isLoading } = useAuth();
-  const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
 
-    if (!email || !password) {
-      setError("Por favor completa todos los campos");
-      return;
-    }
-
-    const success = await login(email, password);
-    if (success) {
-      router.push("/dashboard");
-    } else {
-      setError("Credenciales incorrectas. Usa: demo@ejemplo.com / demo123");
-    }
-  };
+  const [errorMessage, formAction, isPending] = useActionState(
+    authenticate,
+    undefined
+  );
 
   return (
     <div className="w-full max-w-md mx-auto">
@@ -63,15 +48,7 @@ export function LoginForm() {
         </CardHeader>
 
         <CardContent className="p-8">
-          {error && (
-            <Alert className="mb-6 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
-              <AlertDescription className="text-red-700 dark:text-red-300">
-                {error}
-              </AlertDescription>
-            </Alert>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form action={formAction} className="space-y-6">
             <div className="space-y-3">
               <Label
                 htmlFor="email"
@@ -83,13 +60,12 @@ export function LoginForm() {
                 <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 dark:text-slate-500 w-5 h-5" />
                 <Input
                   id="email"
+                  name="email"
                   type="email"
                   placeholder="tu@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
                   className="pl-12 h-14 border-2 border-purple-100 dark:border-purple-800 focus:border-purple-400 dark:focus:border-purple-500 rounded-xl text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 bg-white dark:bg-slate-800"
                   required
-                  disabled={isLoading}
+                  disabled={isPending}
                 />
               </div>
             </div>
@@ -105,19 +81,18 @@ export function LoginForm() {
                 <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 dark:text-slate-500 w-5 h-5" />
                 <Input
                   id="password"
+                  name="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Tu contraseña"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
                   className="pl-12 pr-12 h-14 border-2 border-purple-100 dark:border-purple-800 focus:border-purple-400 dark:focus:border-purple-500 rounded-xl text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 bg-white dark:bg-slate-800"
                   required
-                  disabled={isLoading}
+                  disabled={isPending}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300"
-                  disabled={isLoading}
+                  disabled={isPending}
                 >
                   {showPassword ? (
                     <EyeOff className="w-5 h-5" />
@@ -128,12 +103,15 @@ export function LoginForm() {
               </div>
             </div>
 
+            <input type="hidden" name="redirectTo" value={callbackUrl} />
+
             <Button
               type="submit"
-              disabled={isLoading}
+              disabled={isPending}
               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 dark:from-purple-600 dark:to-pink-600 dark:hover:from-purple-700 dark:hover:to-pink-700 text-white font-semibold h-14 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-disabled={isPending}
             >
-              {isLoading ? (
+              {isPending ? (
                 <div className="flex items-center justify-center gap-2">
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   Iniciando sesión...
@@ -142,6 +120,19 @@ export function LoginForm() {
                 "✨ Iniciar Sesión"
               )}
             </Button>
+
+            <div
+              className="flex h-8 items-end space-x-1"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              {errorMessage && (
+                <>
+                  <AlertCircle className="h-5 w-5 text-red-500" />
+                  <p className="text-sm text-red-500">{errorMessage}</p>
+                </>
+              )}
+            </div>
           </form>
 
           <div className="mt-8 text-center">

@@ -10,7 +10,7 @@ export const loginFormSchema = z.object({
     .string()
     .min(6, "La contraseña debe tener al menos 6 caracteres")
     .max(100, "La contraseña no puede tener más de 100 caracteres"),
-  rememberMe: z.boolean().default(false),
+  // rememberMe: z.boolean().default(false),
 })
 
 // Esquema para registro
@@ -33,9 +33,9 @@ export const registerFormSchema = z.object({
       "La contraseña debe contener al menos una mayúscula, una minúscula y un número"
     ),
   confirmPassword: z.string(),
-  acceptTerms: z.boolean().refine((val) => val === true, {
-    message: "Debes aceptar los términos y condiciones",
-  }),
+  // acceptTerms: z.boolean().refine((val) => val === true, {
+  //   message: "Debes aceptar los términos y condiciones",
+  // }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Las contraseñas no coinciden",
   path: ["confirmPassword"],

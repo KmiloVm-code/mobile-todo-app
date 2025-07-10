@@ -33,21 +33,30 @@ import {
   Sun,
   Monitor,
 } from "lucide-react";
-import { useAuth } from "@/context/auth-context";
-import { useTheme } from "@/context/theme-provider";
+import { signOut } from "next-auth/react";
+import { useTheme } from "next-themes";
+import { User } from "@/types";
 
-export default function UserMenu() {
-  const { user, logout, updatePreferences } = useAuth();
+interface UserMenuProps {
+  user: User | null;
+}
+
+export default function UserMenu({ user }: UserMenuProps) {
   const { theme, setTheme } = useTheme();
   const [showSettings, setShowSettings] = useState(false);
-
-  if (!user) return null;
+  const [preferences, setPreferences] = useState({
+    notifications: true,
+    language: "es" as "es" | "en",
+    defaultView: "all" as "all" | "pending" | "completed",
+  });
 
   const handlePreferenceChange = (
-    key: keyof typeof user.preferences,
+    key: keyof typeof preferences,
     value: any
   ) => {
-    updatePreferences({ [key]: value });
+    setPreferences((prev) => ({ ...prev, [key]: value }));
+    // Aquí podrías hacer una llamada al servidor para guardar las preferencias
+    // updateUserPreferences(key, value);
   };
 
   const getThemeIcon = () => {
@@ -61,6 +70,23 @@ export default function UserMenu() {
     }
   };
 
+  const handleSignOut = async () => {
+    await signOut({
+      callbackUrl: "/login",
+      redirect: true,
+    });
+  };
+
+  // Generar iniciales del nombre
+  const getInitials = (name: string | null | undefined) => {
+    if (!name) return "U";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase();
+  };
+
   return (
     <>
       {/* User Avatar Button */}
@@ -71,12 +97,12 @@ export default function UserMenu() {
             className="h-12 w-12 rounded-full p-0 hover:ring-2 hover:ring-purple-200 dark:hover:ring-purple-800"
           >
             <Avatar className="h-10 w-10 ring-2 ring-purple-200 dark:ring-purple-800">
-              <AvatarImage src={user.avatar} alt={user.name} />
+              <AvatarImage
+                src={user?.avatar || ""}
+                alt={user?.name || "Usuario"}
+              />
               <AvatarFallback className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold">
-                {user.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
+                {getInitials(user?.name)}
               </AvatarFallback>
             </Avatar>
           </Button>
@@ -95,20 +121,20 @@ export default function UserMenu() {
               <CardContent className="p-4">
                 <div className="flex items-center gap-4">
                   <Avatar className="h-16 w-16 ring-4 ring-white dark:ring-slate-800 shadow-lg">
-                    <AvatarImage src={user.avatar} alt={user.name} />
+                    <AvatarImage
+                      src={user?.avatar || ""}
+                      alt={user?.name || "Usuario"}
+                    />
                     <AvatarFallback className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold text-xl">
-                      {user.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
+                      {getInitials(user?.name)}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
                     <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100">
-                      {user.name}
+                      {user?.name || "Usuario"}
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300 text-sm">
-                      {user.email}
+                      {user?.email}
                     </p>
                     <Badge className="mt-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800">
                       ✨ Usuario Premium
@@ -198,7 +224,7 @@ export default function UserMenu() {
                       </div>
                     </div>
                     <Switch
-                      checked={user.preferences.notifications}
+                      checked={preferences.notifications}
                       onCheckedChange={(checked) =>
                         handlePreferenceChange("notifications", checked)
                       }
@@ -225,7 +251,7 @@ export default function UserMenu() {
                       </div>
                     </div>
                     <Select
-                      value={user.preferences.language}
+                      value={preferences.language}
                       onValueChange={(value: "es" | "en") =>
                         handlePreferenceChange("language", value)
                       }
@@ -264,7 +290,7 @@ export default function UserMenu() {
                       </div>
                     </div>
                     <Select
-                      value={user.preferences.defaultView}
+                      value={preferences.defaultView}
                       onValueChange={(value: "all" | "pending" | "completed") =>
                         handlePreferenceChange("defaultView", value)
                       }
@@ -324,7 +350,7 @@ export default function UserMenu() {
 
             {/* Logout Button */}
             <Button
-              onClick={logout}
+              onClick={handleSignOut}
               variant="outline"
               className="w-full h-12 border-2 border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-300 dark:hover:border-red-700 rounded-xl font-semibold bg-transparent"
             >

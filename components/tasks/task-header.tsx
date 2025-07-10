@@ -31,7 +31,7 @@ export function TaskHeader({ user, pendingTasksCount }: TaskHeaderProps) {
             >
               {pendingTasksCount} pendientes
             </Badge>
-            <UserMenu />
+            <UserMenu user={user} />
           </div>
         </div>
       </div>

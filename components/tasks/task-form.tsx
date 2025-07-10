@@ -31,8 +31,6 @@ interface TaskFormProps {
   isLoading?: boolean;
 }
 
-const userId = "32b4ad11-c821-4cb1-83e0-0d7bc9fe6e22";
-
 export function TaskForm({
   defaultValues,
   onSubmit,
@@ -43,7 +41,6 @@ export function TaskForm({
   const form = useForm<TaskFormData>({
     resolver: zodResolver(taskFormSchema),
     defaultValues: {
-      userId: userId,
       title: "",
       description: "",
       startDate: formatTaskDate(new Date()) || "",
@@ -61,11 +58,9 @@ export function TaskForm({
   ] as const;
 
   const handleSubmit = (data: TaskFormData) => {
-    console.log("Submitting task data:", data);
     if (isLoading) return;
     onSubmit({
       ...data,
-      userId,
     });
     if (!isEdit) {
       form.reset();

@@ -16,6 +16,7 @@ export interface UserPreferences {
 export interface User extends BaseEntity {
   name: string
   email: string
+  password: string
   avatar?: string
   preferences: UserPreferences
 }

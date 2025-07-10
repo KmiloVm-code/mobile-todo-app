@@ -18,7 +18,8 @@ import {
   Sparkles,
   CheckCircle,
 } from "lucide-react";
-import { useAuth } from "@/context/auth-context";
+// import { useAuth } from "@/context/auth-context";
+import { registerUser } from "@/lib/actions";
 
 export function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -27,103 +28,69 @@ export function RegisterForm() {
     password: "",
     confirmPassword: "",
   });
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{
-    type: "error" | "success";
+    type: "success" | "error";
     text: string;
   } | null>(null);
-  const { register, isLoading } = useAuth();
   const router = useRouter();
+
+  const passwordStrength = {
+    text: "Muy débil",
+    color: "text-red-500",
+  };
+
+  const updateField = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (field === "password") {
+      // Update password strength based on the new password
+      if (value.length < 6) {
+        setMessage({
+          type: "error",
+          text: "La contraseña debe tener al menos 6 caracteres.",
+        });
+      } else {
+        setMessage(null);
+      }
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     setMessage(null);
-
-    // Validation
-    if (!formData.name.trim()) {
-      setMessage({
-        type: "error",
-        text: "Por favor ingresa tu nombre completo",
-      });
-      return;
-    }
-
-    if (!formData.email) {
-      setMessage({
-        type: "error",
-        text: "Por favor ingresa tu email",
-      });
-      return;
-    }
-
-    if (!formData.password) {
-      setMessage({
-        type: "error",
-        text: "Por favor ingresa una contraseña",
-      });
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      setMessage({
-        type: "error",
-        text: "La contraseña debe tener al menos 6 caracteres",
-      });
-      return;
-    }
 
     if (formData.password !== formData.confirmPassword) {
       setMessage({
         type: "error",
-        text: "Las contraseñas no coinciden",
+        text: "Las contraseñas no coinciden.",
       });
+      setIsLoading(false);
       return;
     }
 
-    const success = await register(
-      formData.name,
-      formData.email,
-      formData.password
-    );
-
-    if (success) {
+    try {
+      await registerUser(formData);
       setMessage({
         type: "success",
-        text: "¡Registro exitoso! Redirigiendo...",
+        text: "Cuenta creada exitosamente. ¡Bienvenido a TaskFlow!",
       });
       setTimeout(() => {
-        router.push("/dashboard");
-      }, 1500);
-    } else {
+        router.push("/login");
+      }, 2000);
+    } catch (error) {
+      console.error("Error al crear la cuenta:", error);
       setMessage({
         type: "error",
-        text: "Error al registrar. Por favor intenta de nuevo.",
+        text: error instanceof Error ? error.message : "Error desconocido.",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
-
-  const updateField = (field: keyof typeof formData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const getPasswordStrength = (password: string) => {
-    if (!password) return { score: 0, text: "", color: "" };
-
-    let score = 0;
-    if (password.length >= 6) score++;
-    if (password.length >= 8) score++;
-    if (/[A-Z]/.test(password)) score++;
-    if (/[a-z]/.test(password)) score++;
-    if (/[0-9]/.test(password)) score++;
-    if (/[^A-Za-z0-9]/.test(password)) score++;
-
-    if (score <= 2) return { score, text: "Débil", color: "text-red-500" };
-    if (score <= 4) return { score, text: "Media", color: "text-yellow-500" };
-    return { score, text: "Fuerte", color: "text-green-500" };
-  };
-
-  const passwordStrength = getPasswordStrength(formData.password);
 
   return (
     <div className="w-full max-w-md mx-auto">

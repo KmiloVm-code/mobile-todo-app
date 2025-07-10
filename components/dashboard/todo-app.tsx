@@ -10,9 +10,12 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { TaskForm, TaskCard, TaskTabs } from "@/components/tasks";
-import type { TaskFormData } from "@/lib/validations/task-form";
+import type {
+  TaskFormData,
+  TaskWithUserData,
+} from "@/lib/validations/task-form";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Task } from "@/types";
 import {
   createdTask,
@@ -21,6 +24,8 @@ import {
   completeTask,
 } from "@/lib/actions";
 import { formatTaskDate } from "@/lib/utils/formatters";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export function TodoApp({ tasks }: { tasks: Task[] }) {
   // Usar el hook existente para manejar las tareas
@@ -30,6 +35,21 @@ export function TodoApp({ tasks }: { tasks: Task[] }) {
   );
   //   (user?.preferences?.defaultView as "all" | "pending" | "completed") || "all"
   // );
+  const router = useRouter();
+  const { data: session, status, update } = useSession();
+  console.log("session:", session?.user);
+  const user = session?.user;
+
+  useEffect(() => {
+    if (status === "loading") return;
+
+    if (!user?.id) {
+      // Actualizar la sesión y refrescar
+      update().then(() => {
+        router.refresh();
+      });
+    }
+  }, [status, user?.id, update, router]);
 
   // Estado para diálogos
   const [isAddingTask, setIsAddingTask] = useState(false);
@@ -58,8 +78,19 @@ export function TodoApp({ tasks }: { tasks: Task[] }) {
 
   // Manejar envío del formulario de agregar tarea
   const handleAddTask = async (data: TaskFormData) => {
+    if (!user?.id) {
+      toast.error("❌ Error de sesión", {
+        description: "No se pudo identificar al usuario.",
+      });
+      return;
+    }
+
     setIsAddingTask(true);
-    await createdTask(data)
+    const taskData: TaskWithUserData = {
+      ...data,
+      userId: user?.id || "",
+    };
+    await createdTask(taskData)
       .then(() => {
         toast.success("🎉 ¡Tarea agregada!", {
           description: `La tarea "${data.title}" ha sido creada.`,
@@ -80,9 +111,17 @@ export function TodoApp({ tasks }: { tasks: Task[] }) {
 
   // Manejar envío del formulario de editar tarea
   const handleUpdateTask = async (data: TaskFormData) => {
-    console.log("Updating task with data:", data);
+    if (!user?.id) {
+      toast.error("❌ Error de sesión");
+      return;
+    }
+
     if (editingTaskId) {
-      await editedTask(editingTaskId, data)
+      const taskData: TaskWithUserData = {
+        ...data,
+        userId: user?.id || "",
+      };
+      await editedTask(editingTaskId, taskData)
         .then(() => {
           toast.success("🔄 ¡Tarea actualizada!", {
             description: `Los cambios en "${data.title}" han sido guardados.`,
@@ -115,7 +154,6 @@ export function TodoApp({ tasks }: { tasks: Task[] }) {
       };
       setEditingTaskId(taskId);
       setEditingTaskData(taskData);
-      console.log("Editing task data:", taskData);
     }
   };
 

@@ -1,21 +1,40 @@
 import { TodoApp } from "@/components/dashboard";
 import type { Metadata } from "next";
-import { getTodosByUser } from "@/lib/data";
+import { fetchUserTaskStats, getTodosByUser, getUserById } from "@/lib/data";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import { TaskHeader } from "@/components/tasks";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Mis Tareas - TaskFlow",
   description: "Gestiona y organiza todas tus tareas",
 };
 
-const userId = "32b4ad11-c821-4cb1-83e0-0d7bc9fe6e22"; // Replace with actual user ID logic
-
 export default async function DashboardPage() {
-  const tasks = await getTodosByUser(userId);
+  const session = await auth();
 
-  console.log("Fetched Todos:", tasks);
+  if (!session?.user || !session.user.id) {
+    redirect("/login");
+  }
+
+  const userId = session.user.id;
+  const tasks = await getTodosByUser(userId);
+  const taskStats = await fetchUserTaskStats(userId);
+  const totalPendingTasks =
+    Number(taskStats.pending) + Number(taskStats.inProgress);
+
+  const user = await getUserById(userId);
+
   return (
     <div className="flex flex-col gap-6">
-      <TodoApp tasks={tasks} />
+      <Suspense fallback={<div>Loading...</div>}>
+        <TaskHeader user={user} pendingTasksCount={totalPendingTasks} />
+      </Suspense>
+
+      <Suspense fallback={<div>Loading tasks...</div>}>
+        <TodoApp tasks={tasks} />
+      </Suspense>
     </div>
   );
 }
