@@ -169,11 +169,11 @@ export function TaskCard({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-10 w-10 rounded-xl hover:bg-purple-100 dark:hover:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-all duration-200"
+                    className="h-12 w-12 sm:h-10 sm:w-10 rounded-xl hover:bg-purple-100 dark:hover:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-all duration-200"
                     onClick={onEdit}
                     aria-label="Editar tarea"
                   >
-                    <Edit2 className="w-4 h-4" />
+                    <Edit2 className="!w-5 !h-5" />
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="w-[95vw] max-w-md rounded-2xl border-0 shadow-2xl bg-white dark:bg-slate-900">
@@ -196,10 +196,10 @@ export function TaskCard({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-10 w-10 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/30 text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-all duration-200"
+                    className="h-12 w-12 sm:h-10 sm:w-10 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/30 text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-all duration-200"
                     aria-label="Eliminar tarea"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="!w-5 !h-5" />
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent className="rounded-2xl">

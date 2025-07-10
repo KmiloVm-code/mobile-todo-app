@@ -71,7 +71,7 @@ export function TaskForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
-        className="space-y-6 p-2"
+        className="space-y-4 p-2 max-h-[85dvh] overflow-y-auto hide-scrollbar"
       >
         <FormField
           control={form.control}
@@ -106,7 +106,7 @@ export function TaskForm({
                 <Textarea
                   placeholder="Agrega más detalles sobre tu tarea..."
                   {...field}
-                  rows={3}
+                  rows={2}
                   className="border-2 border-purple-100 dark:border-purple-800 focus:border-purple-400 dark:focus:border-purple-500 rounded-xl text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 resize-none bg-white dark:bg-slate-800"
                   disabled={isLoading}
                 />
@@ -147,7 +147,7 @@ export function TaskForm({
           )}
         />
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <FormField
             control={form.control}
             name="startDate"
@@ -160,7 +160,15 @@ export function TaskForm({
                   <Input
                     type="date"
                     {...field}
-                    className="border-2 border-emerald-100 dark:border-emerald-800 focus:border-emerald-400 dark:focus:border-emerald-500 rounded-xl h-12 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100"
+                    className="w-full min-w-0 border-2 border-emerald-100 dark:border-emerald-800 focus:border-emerald-400 dark:focus:border-emerald-500 rounded-xl h-12 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100"
+                    style={{
+                      fontSize: "14px !important",
+                      padding: "0 12px",
+                      height: "48px",
+                      lineHeight: "1.4",
+                      appearance: "none",
+                      WebkitAppearance: "none",
+                    }}
                     disabled={isLoading}
                   />
                 </FormControl>
@@ -182,7 +190,15 @@ export function TaskForm({
                     type="date"
                     {...field}
                     min={form.watch("startDate") || undefined}
-                    className="border-2 border-rose-100 dark:border-rose-800 focus:border-rose-400 dark:focus:border-rose-500 rounded-xl h-12 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100"
+                    className="w-full min-w-0 border-2 border-rose-100 dark:border-rose-800 focus:border-rose-400 dark:focus:border-rose-500 rounded-xl h-12 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100"
+                    style={{
+                      fontSize: "14px !important",
+                      padding: "0 12px",
+                      height: "48px",
+                      lineHeight: "1.4",
+                      appearance: "none",
+                      WebkitAppearance: "none",
+                    }}
                     disabled={isLoading}
                   />
                 </FormControl>
@@ -192,20 +208,30 @@ export function TaskForm({
           />
         </div>
 
-        <div className="flex gap-3 pt-4">
+        <div className="flex flex-col sm:flex-row gap-3 pt-2 sticky bottom-0 bg-white dark:bg-slate-900 z-10">
           <Button
             type="submit"
             disabled={isLoading}
-            className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 dark:from-purple-600 dark:to-pink-600 dark:hover:from-purple-700 dark:hover:to-pink-700 text-white font-semibold h-12 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full sm:flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 dark:from-purple-600 dark:to-pink-600 dark:hover:from-purple-700 dark:hover:to-pink-700 text-white font-semibold h-12 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm active:scale-95"
           >
-            {isLoading ? "..." : isEdit ? "✨ Actualizar" : "🚀 Crear"} Tarea
+            {isLoading ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                <span>Procesando...</span>
+              </div>
+            ) : (
+              <span className="flex items-center justify-center gap-2">
+                {isEdit ? "✨ Actualizar" : "🚀 Crear"} Tarea
+              </span>
+            )}
           </Button>
+
           <Button
             type="button"
             variant="outline"
             onClick={onCancel}
             disabled={isLoading}
-            className="flex-1 border-2 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-slate-600 dark:text-slate-300 font-semibold h-12 rounded-xl bg-transparent hover:bg-slate-50 dark:hover:bg-slate-800"
+            className="w-full sm:flex-1 border-2 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-slate-600 dark:text-slate-300 font-semibold h-12 rounded-xl bg-transparent hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-200 text-sm active:scale-95"
           >
             Cancelar
           </Button>
