@@ -147,7 +147,7 @@ export function LoginForm() {
             </p>
           </div>
 
-          <div className="mt-6 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-2xl border border-emerald-200 dark:border-emerald-800">
+          {/* <div className="mt-6 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-2xl border border-emerald-200 dark:border-emerald-800">
             <p className="text-emerald-700 dark:text-emerald-300 text-sm font-medium">
               💡 Credenciales de prueba:
             </p>
@@ -156,7 +156,7 @@ export function LoginForm() {
               <br />
               <strong>Contraseña:</strong> demo123
             </p>
-          </div>
+          </div> */}
         </CardContent>
       </Card>
     </div>
