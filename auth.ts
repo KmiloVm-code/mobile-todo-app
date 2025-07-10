@@ -6,7 +6,11 @@ import type { LoginData } from '@/types';
 import bcryptjs from 'bcryptjs';
 import postgres from 'postgres';
 
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: "prefer" });
+if (!process.env.POSTGRES_URL) {
+  throw new Error("POSTGRES_URL environment variable is not set");
+}
+
+const sql = postgres(process.env.POSTGRES_URL);
 
 async function getUser(email: string): Promise<LoginData | undefined> {
   try {

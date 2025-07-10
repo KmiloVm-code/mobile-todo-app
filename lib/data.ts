@@ -3,7 +3,11 @@
 import postgres from 'postgres';
 import { Task, TaskStats, User } from "@/types"
 
-const sql = postgres(process.env.POSTGRES_URL!, { ssl : 'prefer' });
+if (!process.env.POSTGRES_URL) {
+  throw new Error("POSTGRES_URL environment variable is not set");
+}
+
+const sql = postgres(process.env.POSTGRES_URL);
 
 export async function getTodosByUser(userId: string): Promise<Task[]> {
   try {

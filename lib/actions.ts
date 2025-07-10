@@ -12,7 +12,13 @@ import { signIn } from "@/auth";
 import { AuthError } from "next-auth";
 import bcryptjs from "bcryptjs";
 
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: "prefer" });
+if (!process.env.POSTGRES_URL) {
+  throw new Error("POSTGRES_URL environment variable is not set");
+}
+
+const sql = postgres(process.env.POSTGRES_URL);
+
+console.log("Using Postgres URL:", process.env.POSTGRES_URL);
 
 export async function authenticate(
   prevState: string | undefined,
