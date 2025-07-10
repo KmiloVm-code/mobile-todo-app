@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   const manifest = {
-    name: 'Mobile Todo App',
-    short_name: 'TodoApp',
+    name: 'TaskFlow',
+    short_name: 'TaskFlow',
     description: 'Una aplicación de tareas simple y eficiente',
     start_url: '/',
     display: 'standalone',
