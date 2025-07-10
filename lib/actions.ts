@@ -1,7 +1,6 @@
 "use server";
 
 import {
-  TaskFormData,
   TaskWithUserData,
   RegisterFormData,
   loginFormSchema,
@@ -21,7 +20,7 @@ const sql = postgres(process.env.POSTGRES_URL);
 console.log("Using Postgres URL:", process.env.POSTGRES_URL);
 
 export async function authenticate(
-  prevState: string | undefined,
+  _prevState: string | undefined,
   formData: FormData
 ): Promise<string | undefined> {
   try {
