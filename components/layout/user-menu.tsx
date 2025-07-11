@@ -108,7 +108,7 @@ export default function UserMenu({ user }: UserMenuProps) {
           </Button>
         </DialogTrigger>
 
-        <DialogContent className="w-[95vw] max-w-md rounded-2xl border-0 shadow-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-slate-900">
+        <DialogContent className="w-[95vw] max-w-md rounded-2xl border-0 shadow-2xl max-h-[90vh] overflow-y-auto hide-scrollbar bg-white dark:bg-slate-900">
           <DialogHeader className="pb-4">
             <DialogTitle className="text-2xl font-bold text-slate-800 dark:text-slate-100">
               👤 Mi Perfil

@@ -27,14 +27,16 @@ export default async function DashboardPage() {
   const user = await getUserById(userId);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col min-h-full">
       <Suspense fallback={<div>Loading...</div>}>
         <TaskHeader user={user} pendingTasksCount={totalPendingTasks} />
       </Suspense>
 
-      <Suspense fallback={<div>Loading tasks...</div>}>
-        <TodoApp tasks={tasks} />
-      </Suspense>
+      <div className="flex-1">
+        <Suspense fallback={<div>Loading tasks...</div>}>
+          <TodoApp tasks={tasks} />
+        </Suspense>
+      </div>
     </div>
   );
 }

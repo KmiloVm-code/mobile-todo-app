@@ -18,6 +18,10 @@ export const viewport: Viewport = {
   themeColor: "#8b5cf6",
   width: "device-width",
   initialScale: 1,
+  minimumScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -26,13 +30,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" suppressHydrationWarning>
-      <body className={`${inter.className} antialiased`}>
+    <html lang="es" suppressHydrationWarning className="mobile-viewport">
+      <body
+        className={`${inter.className} antialiased overflow-x-hidden hide-scrollbar`}
+      >
         <SessionProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <div className="relative flex min-h-screen flex-col">
-              {children}
-            </div>
+            <main>{children}</main>
             <Toaster />
           </ThemeProvider>
         </SessionProvider>

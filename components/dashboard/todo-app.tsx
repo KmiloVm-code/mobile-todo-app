@@ -37,7 +37,6 @@ export function TodoApp({ tasks }: { tasks: Task[] }) {
   // );
   const router = useRouter();
   const { data: session, status, update } = useSession();
-  console.log("session:", session?.user);
   const user = session?.user;
 
   useEffect(() => {
@@ -212,10 +211,7 @@ export function TodoApp({ tasks }: { tasks: Task[] }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pb-20 transition-colors duration-300">
-      {/* Header */}
-      {/* <TaskHeader user={user} pendingTasksCount={pendingTasksCount} /> */}
-
+    <div className="min-h-full bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pb-20 transition-colors duration-300">
       {/* Add Task Button */}
       <div className="p-6">
         <Dialog open={isAddingTask} onOpenChange={setIsAddingTask}>
