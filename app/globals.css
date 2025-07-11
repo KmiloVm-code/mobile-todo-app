@@ -23,9 +23,10 @@ body {
   /* Ensure proper mobile viewport handling */
   .mobile-viewport {
     height: 100vh;
-    height: 100dvh; /* Dynamic viewport height for mobile */
+    height: 100dvh;
+    /* Dynamic viewport height for mobile */
   }
-  
+
   /* Safe area handling for mobile */
   .safe-area {
     padding-top: env(safe-area-inset-top);
@@ -71,6 +72,7 @@ body {
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
   .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
@@ -111,10 +113,8 @@ body {
   * {
     @apply border-border;
   }
-  
+
   html {
-    /* Ensure full height */
-    height: 100%;
     /* Hide scrollbar but allow scrolling */
     -webkit-scrollbar: none;
     -ms-overflow-style: none;
@@ -122,14 +122,11 @@ body {
     /* Enable smooth scrolling on mobile */
     -webkit-overflow-scrolling: touch;
   }
-  
+
   body {
-    @apply bg-background text-foreground;
     /* Prevent horizontal scroll */
     overflow-x: hidden;
     /* Ensure proper touch scrolling on mobile */
     -webkit-overflow-scrolling: touch;
-    /* Full height */
-    min-height: 100%;
   }
 }
