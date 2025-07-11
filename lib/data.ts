@@ -16,6 +16,8 @@ export async function getTodosByUser(userId: string): Promise<Task[]> {
       WHERE user_id = ${userId} 
       ORDER BY created_at DESC
     `;
+
+    console.log(`Fetched ${todos.length} todos for user ${userId}`);
     return todos.map(todo => ({
       id: todo.id,
       title: todo.title,
@@ -69,6 +71,8 @@ export async function getUserById(userId: string) {
       SELECT * FROM users 
       WHERE id = ${userId}
     `;
+
+    console.log(`Fetched user with ID ${userId}:`, user);
     return user[0] as unknown as User;
   } catch (error) {
     console.error('Error fetching user:', error);
@@ -117,6 +121,7 @@ export async function fetchTasksByStatus(status: string) {
       WHERE status = ${status}
       ORDER BY due_date ASC NULLS LAST
     `;
+    console.log(`Fetched ${tasks.length} tasks with status ${status}`);
     return tasks;
   } catch (error) {
     console.error('Error fetching tasks by status:', error);
@@ -168,6 +173,7 @@ export async function fetchUserTaskStats(userId: string): Promise<TaskStats> {
       WHERE user_id = ${userId}
     `;
     
+    console.log(`Fetched task stats for user ${userId}:`, stats);
     const rawStats = stats[0];
     
     if (!rawStats) {

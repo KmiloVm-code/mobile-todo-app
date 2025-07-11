@@ -19,6 +19,7 @@ const sql = postgres(process.env.POSTGRES_URL);
 
 console.log("Using Postgres URL:", process.env.POSTGRES_URL);
 
+
 export async function authenticate(
   _prevState: string | undefined,
   formData: FormData
@@ -26,6 +27,8 @@ export async function authenticate(
   try {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
+
+    console.log("🔐 Attempting authentication for:", email);
 
     // Validate input data
     const validatedFields = loginFormSchema.safeParse({

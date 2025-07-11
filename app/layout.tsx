@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "../components/ui/sonner";
+import { NotchHandler } from "../components/notch-handler";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -35,6 +36,7 @@ export default function RootLayout({
       >
         <SessionProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <NotchHandler />
             <main>{children}</main>
             <Toaster />
           </ThemeProvider>
