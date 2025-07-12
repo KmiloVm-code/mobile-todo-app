@@ -6,6 +6,7 @@ import { SessionProvider } from "next-auth/react";
 import { Toaster } from "../components/ui/sonner";
 import { NotchHandler } from "../components/notch-handler";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -38,6 +39,7 @@ export default function RootLayout({
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <NotchHandler />
             <main>{children}</main>
+            <Analytics />
             <Toaster />
           </ThemeProvider>
         </SessionProvider>
