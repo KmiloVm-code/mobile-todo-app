@@ -1,7 +1,7 @@
-'use server'
+"use server";
 
-import postgres from 'postgres';
-import { Task, TaskStats, User } from "@/types"
+import postgres from "postgres";
+import { Task, TaskStats, User } from "@/types";
 
 if (!process.env.POSTGRES_URL) {
   throw new Error("POSTGRES_URL environment variable is not set");
@@ -13,12 +13,30 @@ export async function getTodosByUser(userId: string): Promise<Task[]> {
   try {
     const todos = await sql`
       SELECT * FROM tasks 
-      WHERE user_id = ${userId} 
-      ORDER BY created_at DESC
+      WHERE user_id = ${userId}
+      ORDER BY 
+        (status = 'completed') ASC,
+        CASE 
+          WHEN status != 'completed' THEN
+            CASE 
+              WHEN priority = 'urgent' THEN 1
+              WHEN priority = 'high' THEN 2
+              WHEN priority = 'medium' THEN 3
+              WHEN priority = 'low' THEN 4
+              ELSE 5
+            END
+        END ASC,
+        CASE 
+          WHEN status != 'completed' THEN end_date
+        END ASC NULLS LAST,
+        CASE 
+          WHEN status != 'completed' THEN created_at
+        END DESC,
+        completed_at DESC NULLS LAST;
     `;
 
     console.log(`Fetched ${todos.length} todos for user ${userId}`);
-    return todos.map(todo => ({
+    return todos.map((todo) => ({
       id: todo.id,
       title: todo.title,
       description: todo.description,
@@ -36,31 +54,70 @@ export async function getTodosByUser(userId: string): Promise<Task[]> {
         createdAt: todo.category_created_at || todo.created_at,
         updatedAt: todo.category_updated_at || todo.updated_at,
       },
-      tags: todo.tags ? todo.tags.map((tag: Pick<{ id: string; name: string; color: string }, 'id' | 'name' | 'color'>) => ({
-        id: tag.id,
-        name: tag.name,
-        color: tag.color,
-      })) : [],
-      attachments: todo.attachments ? todo.attachments.map((att: Pick<{ id: string; name: string; url: string; type: string; size: number }, 'id' | 'name' | 'url' | 'type' | 'size'>) => ({
-        id: att.id,
-        name: att.name,
-        url: att.url,
-        type: att.type,
-        size: att.size,
-      })) : [],
-      subtasks: todo.subtasks ? todo.subtasks.map((sub: Pick<{ id: string; title: string; completed: boolean; task_id: string; order: number }, 'id' | 'title' | 'completed' | 'task_id' | 'order'>) => ({
-        id: sub.id,
-        title: sub.title,
-        completed: sub.completed,
-        taskId: sub.task_id,
-        order: sub.order,
-      })) : [],
+      tags: todo.tags
+        ? todo.tags.map(
+            (
+              tag: Pick<
+                { id: string; name: string; color: string },
+                "id" | "name" | "color"
+              >
+            ) => ({
+              id: tag.id,
+              name: tag.name,
+              color: tag.color,
+            })
+          )
+        : [],
+      attachments: todo.attachments
+        ? todo.attachments.map(
+            (
+              att: Pick<
+                {
+                  id: string;
+                  name: string;
+                  url: string;
+                  type: string;
+                  size: number;
+                },
+                "id" | "name" | "url" | "type" | "size"
+              >
+            ) => ({
+              id: att.id,
+              name: att.name,
+              url: att.url,
+              type: att.type,
+              size: att.size,
+            })
+          )
+        : [],
+      subtasks: todo.subtasks
+        ? todo.subtasks.map(
+            (
+              sub: Pick<
+                {
+                  id: string;
+                  title: string;
+                  completed: boolean;
+                  task_id: string;
+                  order: number;
+                },
+                "id" | "title" | "completed" | "task_id" | "order"
+              >
+            ) => ({
+              id: sub.id,
+              title: sub.title,
+              completed: sub.completed,
+              taskId: sub.task_id,
+              order: sub.order,
+            })
+          )
+        : [],
       userId: todo.user_id,
       createdAt: todo.created_at,
       updatedAt: todo.updated_at,
     })) as Task[];
   } catch (error) {
-    console.error('Error fetching todos:', error);
+    console.error("Error fetching todos:", error);
     throw error;
   }
 }
@@ -75,7 +132,7 @@ export async function getUserById(userId: string) {
     console.log(`Fetched user with ID ${userId}:`, user);
     return user[0] as unknown as User;
   } catch (error) {
-    console.error('Error fetching user:', error);
+    console.error("Error fetching user:", error);
     throw error;
   }
 }
@@ -109,7 +166,7 @@ export async function fetchTasksWithDetails() {
     `;
     return tasks;
   } catch (error) {
-    console.error('Error fetching tasks with details:', error);
+    console.error("Error fetching tasks with details:", error);
     throw error;
   }
 }
@@ -124,7 +181,7 @@ export async function fetchTasksByStatus(status: string) {
     console.log(`Fetched ${tasks.length} tasks with status ${status}`);
     return tasks;
   } catch (error) {
-    console.error('Error fetching tasks by status:', error);
+    console.error("Error fetching tasks by status:", error);
     throw error;
   }
 }
@@ -139,7 +196,7 @@ export async function fetchTaskCategories(userId: string) {
     `;
     return categories;
   } catch (error) {
-    console.error('Error fetching task categories:', error);
+    console.error("Error fetching task categories:", error);
     throw error;
   }
 }
@@ -154,7 +211,7 @@ export async function fetchTaskTags(userId: string) {
     `;
     return tags;
   } catch (error) {
-    console.error('Error fetching task tags:', error);
+    console.error("Error fetching task tags:", error);
     throw error;
   }
 }
@@ -172,10 +229,10 @@ export async function fetchUserTaskStats(userId: string): Promise<TaskStats> {
       FROM user_task_stats 
       WHERE user_id = ${userId}
     `;
-    
+
     console.log(`Fetched task stats for user ${userId}:`, stats);
     const rawStats = stats[0];
-    
+
     if (!rawStats) {
       return {
         total: 0,
@@ -185,10 +242,10 @@ export async function fetchUserTaskStats(userId: string): Promise<TaskStats> {
         cancelled: 0,
         overdue: 0,
         dueToday: 0,
-        completionRate: 0
+        completionRate: 0,
       } as TaskStats;
     }
-    
+
     return {
       total: rawStats.total_tasks,
       completed: rawStats.completed_tasks,
@@ -197,10 +254,13 @@ export async function fetchUserTaskStats(userId: string): Promise<TaskStats> {
       cancelled: 0, // Add this column to your view or calculate separately
       overdue: rawStats.overdue_tasks,
       dueToday: rawStats.due_today_tasks,
-      completionRate: rawStats.total_tasks > 0 ? (rawStats.completed_tasks / rawStats.total_tasks) * 100 : 0
+      completionRate:
+        rawStats.total_tasks > 0
+          ? (rawStats.completed_tasks / rawStats.total_tasks) * 100
+          : 0,
     } as TaskStats;
   } catch (error) {
-    console.error('Error fetching user task stats:', error);
+    console.error("Error fetching user task stats:", error);
     throw error;
   }
 }
