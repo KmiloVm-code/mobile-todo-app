@@ -1,15 +1,24 @@
-"use client";
+"use server";
 
 import { Badge } from "@/components/ui/badge";
 import UserMenu from "@/components/layout/user-menu";
-import type { User } from "@/types";
+import { auth } from "@/auth";
+import { fetchUserTaskStats, getUserById } from "@/lib/data";
 
-interface TaskHeaderProps {
-  user: User | null;
-  pendingTasksCount: number;
-}
+export async function TaskHeader() {
+  const session = await auth();
+  const userId = session?.user?.id;
 
-export function TaskHeader({ user, pendingTasksCount }: TaskHeaderProps) {
+  if (!userId) {
+    throw new Error("No user session found.");
+  }
+
+  const taskStats = await fetchUserTaskStats(userId);
+  const pendingTasksCount =
+    Number(taskStats.pending) + Number(taskStats.inProgress);
+
+  const user = await getUserById(userId);
+
   return (
     <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-purple-100 dark:border-slate-700 sticky top-0 z-10 shadow-sm transition-colors duration-300">
       <div className="px-4 sm:px-6 py-4 sm:py-6">

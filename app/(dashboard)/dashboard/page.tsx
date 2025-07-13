@@ -1,10 +1,11 @@
 import { TodoApp } from "@/components/dashboard";
 import type { Metadata } from "next";
-import { fetchUserTaskStats, getTodosByUser, getUserById } from "@/lib/data";
+import { getTodosByUser } from "@/lib/data";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { TaskHeader } from "@/components/tasks";
 import { Suspense } from "react";
+import { DashboardHeaderSkeleton } from "@/components/dashboard/skeletons";
 
 export const metadata: Metadata = {
   title: "Mis Tareas - TaskFlow",
@@ -19,23 +20,17 @@ export default async function DashboardPage() {
   }
 
   const userId = session.user.id;
-  const tasks = await getTodosByUser(userId);
-  const taskStats = await fetchUserTaskStats(userId);
-  const totalPendingTasks =
-    Number(taskStats.pending) + Number(taskStats.inProgress);
 
-  const user = await getUserById(userId);
+  const tasks = await getTodosByUser(userId);
 
   return (
     <div className="flex flex-col min-h-full">
-      <Suspense fallback={<div>Loading...</div>}>
-        <TaskHeader user={user} pendingTasksCount={totalPendingTasks} />
+      <Suspense fallback={<DashboardHeaderSkeleton />}>
+        <TaskHeader />
       </Suspense>
 
       <div className="flex-1">
-        <Suspense fallback={<div>Loading tasks...</div>}>
-          <TodoApp tasks={tasks} />
-        </Suspense>
+        <TodoApp tasks={tasks} />
       </div>
     </div>
   );

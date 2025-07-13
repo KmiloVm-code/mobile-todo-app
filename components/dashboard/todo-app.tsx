@@ -15,7 +15,7 @@ import type {
   TaskWithUserData,
 } from "@/lib/validations/task-form";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Task } from "@/types";
 import {
   createdTask,
@@ -26,6 +26,7 @@ import {
 import { formatTaskDate } from "@/lib/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { DashboardCardSkeleton } from "./skeletons";
 
 export function TodoApp({ tasks }: { tasks: Task[] }) {
   // Usar el hook existente para manejar las tareas
@@ -237,21 +238,23 @@ export function TodoApp({ tasks }: { tasks: Task[] }) {
         setActiveTab={handleTabChange}
         tasks={tasks}
       >
-        {filteredTasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            defaultValues={
-              editingTaskId === task.id ? editingTaskData : undefined
-            }
-            isEditing={editingTaskId === task.id}
-            onToggle={() => handleToggleTask(task.id)}
-            onEdit={() => handleEditTask(task.id)}
-            onUpdate={handleUpdateTask}
-            onDelete={() => handleDeleteTask(task.id)}
-            onCancelEdit={handleCancelEdit}
-          />
-        ))}
+        <Suspense fallback={<DashboardCardSkeleton />}>
+          {filteredTasks.map((task) => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              defaultValues={
+                editingTaskId === task.id ? editingTaskData : undefined
+              }
+              isEditing={editingTaskId === task.id}
+              onToggle={() => handleToggleTask(task.id)}
+              onEdit={() => handleEditTask(task.id)}
+              onUpdate={handleUpdateTask}
+              onDelete={() => handleDeleteTask(task.id)}
+              onCancelEdit={handleCancelEdit}
+            />
+          ))}
+        </Suspense>
       </TaskTabs>
     </div>
   );
