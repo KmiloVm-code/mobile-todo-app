@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { auth } from "@/auth";
+import { auth } from "@/auth/auth";
 import { redirect } from "next/navigation";
 import { TaskHeader } from "@/components/tasks";
 import { Suspense } from "react";
@@ -7,7 +7,7 @@ import {
   DashboardCardSkeleton,
   DashboardHeaderSkeleton,
 } from "@/components/dashboard/skeletons";
-import { AddTaskDialog } from "@/components/tasks/AddTaskDialog";
+import { AddTaskDialog } from "@/components/tasks/add-task-dialog";
 import { TaskList } from "@/components/tasks/Task-List";
 import { User } from "@/types";
 

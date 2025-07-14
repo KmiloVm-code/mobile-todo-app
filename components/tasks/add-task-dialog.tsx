@@ -14,7 +14,7 @@ import type {
   TaskWithUserData,
 } from "@/lib/validations/task-form";
 import { toast } from "sonner";
-import { createdTask } from "@/lib/actions";
+import { createdTask } from "@/lib/queries/actions";
 import { useState } from "react";
 
 interface AddTaskDialogProps {

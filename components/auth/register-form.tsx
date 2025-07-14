@@ -18,8 +18,8 @@ import {
   Sparkles,
   CheckCircle,
 } from "lucide-react";
-// import { useAuth } from "@/context/auth-context";
-import { registerUser } from "@/lib/actions";
+
+import { registerUser } from "@/lib/queries/actions";
 
 export function RegisterForm() {
   const [formData, setFormData] = useState({

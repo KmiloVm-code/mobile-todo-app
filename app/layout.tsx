@@ -4,7 +4,7 @@ import { Inter } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "../components/ui/sonner";
-import { NotchHandler } from "../components/notch-handler";
+import { NotchHandler } from "../components/theme/notch-handler";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 

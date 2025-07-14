@@ -4,10 +4,10 @@ import {
   TaskWithUserData,
   RegisterFormData,
   loginFormSchema,
-} from "./validations";
+} from "@/lib/validations";
 import postgres from "postgres";
 import { revalidatePath } from "next/cache";
-import { signIn } from "@/auth";
+import { signIn } from "@/auth/auth";
 import { AuthError } from "next-auth";
 import bcryptjs from "bcryptjs";
 
@@ -17,9 +17,6 @@ if (!process.env.POSTGRES_URL) {
 
 const sql = postgres(process.env.POSTGRES_URL);
 
-console.log("Using Postgres URL:", process.env.POSTGRES_URL);
-
-
 export async function authenticate(
   _prevState: string | undefined,
   formData: FormData
@@ -28,9 +25,6 @@ export async function authenticate(
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    console.log("🔐 Attempting authentication for:", email);
-
-    // Validate input data
     const validatedFields = loginFormSchema.safeParse({
       email,
       password,
@@ -72,10 +66,8 @@ export async function registerUser(formData: RegisterFormData): Promise<void> {
     throw new Error("User already exists");
   }
 
-  // Hash the password
   const hashedPassword = await bcryptjs.hash(password, 10);
 
-  // Insert new user into the database
   await sql`
     INSERT INTO users (email, password_hash, name)
     VALUES (${email}, ${hashedPassword}, ${formData.name})
@@ -97,7 +89,6 @@ export async function createdTask(task: TaskWithUserData): Promise<void> {
   revalidatePath("/dashboard");
 }
 
-// edit task partial patch
 export async function editedTask(
   taskId: string,
   task: TaskWithUserData

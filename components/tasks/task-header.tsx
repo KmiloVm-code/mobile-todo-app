@@ -1,8 +1,8 @@
 "use server";
 
 import { Badge } from "@/components/ui/badge";
-import UserMenu from "@/components/layout/user-menu";
-import { fetchUserTaskStats } from "@/lib/data";
+import UserMenu from "@/components/profile/user-menu";
+import { fetchUserTaskStats } from "@/lib/queries/data";
 import { User } from "@/types";
 
 interface TaskHeaderProps {

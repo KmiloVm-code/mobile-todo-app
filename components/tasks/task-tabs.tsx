@@ -6,7 +6,7 @@ import type { Task } from "@/types/task";
 import { TaskCard } from "./task-card";
 import { TaskFormData, TaskWithUserData } from "@/lib/validations";
 import { useState } from "react";
-import { completeTask, deleteTask, editedTask } from "@/lib/actions";
+import { completeTask, deleteTask, editedTask } from "@/lib/queries/actions";
 import { formatTaskDate } from "@/lib/utils/formatters";
 import { toast } from "sonner";
 

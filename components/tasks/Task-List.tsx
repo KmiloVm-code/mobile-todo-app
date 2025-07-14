@@ -1,6 +1,6 @@
 "use server";
 
-import { getTodosByUser } from "@/lib/data";
+import { getTodosByUser } from "@/lib/queries/data";
 import { TaskTabs } from "./task-tabs";
 
 interface TaskListProps {

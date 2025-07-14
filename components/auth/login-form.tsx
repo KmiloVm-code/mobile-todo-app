@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Eye, EyeOff, Mail, Lock, Sparkles, AlertCircle } from "lucide-react";
 import { useActionState } from "react";
-import { authenticate } from "@/lib/actions";
+import { authenticate } from "@/lib/queries/actions";
 import { useSearchParams } from "next/navigation";
 
 export function LoginForm() {
