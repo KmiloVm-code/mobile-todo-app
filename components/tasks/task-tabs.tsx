@@ -1,23 +1,27 @@
 "use client";
 
-import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Task } from "@/types/task";
+import { TaskCard } from "./task-card";
+import { TaskFormData, TaskWithUserData } from "@/lib/validations";
+import { useState } from "react";
+import { completeTask, deleteTask, editedTask } from "@/lib/actions";
+import { formatTaskDate } from "@/lib/utils/formatters";
+import { toast } from "sonner";
 
 interface TaskTabsProps {
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
   tasks: Task[];
-  children: React.ReactNode;
+  user?: string;
 }
 
-export function TaskTabs({
-  activeTab,
-  setActiveTab,
-  tasks,
-  children,
-}: TaskTabsProps) {
+export function TaskTabs({ tasks, user }: TaskTabsProps) {
+  const [activeTab, setActiveTab] = useState("all");
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [editingTaskData, setEditingTaskData] = useState<
+    Partial<TaskFormData> | undefined
+  >(undefined);
+
   const pendingCount = tasks.filter((t) => t.status !== "completed").length;
   const completedCount = tasks.filter((t) => t.status === "completed").length;
 
@@ -33,6 +37,101 @@ export function TaskTabs({
   };
 
   const filteredTasks = getFilteredTasks();
+
+  const handleUpdateTask = async (data: TaskFormData) => {
+    if (!user) {
+      toast.error("❌ Error de sesión");
+      return;
+    }
+
+    if (editingTaskId) {
+      const taskData: TaskWithUserData = {
+        ...data,
+        userId: user || "",
+      };
+      await editedTask(editingTaskId, taskData)
+        .then(() => {
+          toast.success("🔄 ¡Tarea actualizada!", {
+            description: `Los cambios en "${data.title}" han sido guardados.`,
+          });
+        })
+        .catch((error) => {
+          console.error("Error al actualizar tarea:", error);
+          toast.error("❌ Error al actualizar la tarea", {
+            description: "Por favor, inténtalo de nuevo más tarde.",
+          });
+        })
+        .finally(() => {
+          setEditingTaskId(null);
+          setEditingTaskData(undefined);
+        });
+    }
+  };
+
+  // Abrir diálogo de edición
+  const handleEditTask = (taskId: string) => {
+    const task = tasks.find((t) => t.id === taskId);
+    if (task) {
+      const taskData: Partial<TaskFormData> = {
+        title: task.title,
+        description: task.description || "",
+        priority: task.priority,
+        startDate: formatTaskDate(task.startDate),
+        endDate: formatTaskDate(task.endDate),
+      };
+      setEditingTaskId(taskId);
+      setEditingTaskData(taskData);
+    }
+  };
+
+  // Cancelar edición
+  const handleCancelEdit = () => {
+    setEditingTaskId(null);
+    setEditingTaskData(undefined);
+  };
+
+  // Manejar toggle de tarea con notificación
+  const handleToggleTask = async (taskId: string) => {
+    const task = tasks.find((t) => t.id === taskId);
+    if (task) {
+      const newStatus = task.status === "completed" ? "pending" : "completed";
+      await completeTask(taskId, newStatus)
+        .then(() => {
+          toast.success("✅ Tarea actualizada", {
+            description: `La tarea "${task.title}" ha sido marcada como ${newStatus}.`,
+          });
+        })
+        .catch((error) => {
+          console.error("Error al actualizar tarea:", error);
+          toast.error("❌ Error al actualizar la tarea", {
+            description: "Por favor, inténtalo de nuevo más tarde.",
+          });
+        });
+    }
+  };
+
+  // Manejar eliminación de tarea con notificación
+  const handleDeleteTask = async (taskId: string) => {
+    const task = tasks.find((t) => t.id === taskId);
+    if (task) {
+      await deleteTask(taskId)
+        .then(() => {
+          toast.success("🗑️ Tarea eliminada", {
+            description: `La tarea "${task.title}" ha sido eliminada.`,
+          });
+        })
+        .catch((error) => {
+          console.error("Error al eliminar tarea:", error);
+          toast.error("❌ Error al eliminar la tarea", {
+            description: "Por favor, inténtalo de nuevo más tarde.",
+          });
+        })
+        .finally(() => {
+          setEditingTaskId(null);
+          setEditingTaskData(undefined);
+        });
+    }
+  };
 
   const tabConfigs = [
     {
@@ -120,7 +219,21 @@ export function TaskTabs({
               </CardContent>
             </Card>
           ) : (
-            children
+            filteredTasks.map((task) => (
+              <TaskCard
+                key={task.id}
+                task={task}
+                defaultValues={
+                  editingTaskId === task.id ? editingTaskData : undefined
+                }
+                onToggle={() => handleToggleTask(task.id)}
+                onEdit={() => handleEditTask(task.id)}
+                onUpdate={handleUpdateTask}
+                onDelete={() => handleDeleteTask(task.id)}
+                onCancelEdit={handleCancelEdit}
+                isEditing={editingTaskId === task.id}
+              />
+            ))
           )}
         </TabsContent>
       </Tabs>

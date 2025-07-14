@@ -176,12 +176,21 @@ export function TaskCard({
                     <Edit2 className="!w-5 !h-5" />
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="w-[95vw] max-w-md rounded-2xl border-0 shadow-2xl bg-white dark:bg-slate-900">
+                <DialogContent
+                  className="w-[95vw] max-w-md rounded-2xl border-0 shadow-2xl bg-white dark:bg-slate-900"
+                  aria-describedby="edit-task-dialog-description"
+                >
                   <DialogHeader className="pb-2">
                     <DialogTitle className="text-2xl font-bold text-slate-800 dark:text-slate-100">
                       ✏️ Editar Tarea
                     </DialogTitle>
                   </DialogHeader>
+                  <p
+                    id="edit-task-dialog-description"
+                    className="text-slate-500 dark:text-slate-400 text-sm mb-2"
+                  >
+                    Modifica los detalles de la tarea "{task.title}".
+                  </p>
                   <TaskForm
                     defaultValues={defaultValues}
                     onSubmit={onUpdate}

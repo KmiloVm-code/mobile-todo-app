@@ -220,12 +220,17 @@ export async function fetchUserTaskStats(userId: string): Promise<TaskStats> {
   try {
     const stats = await sql`
       SELECT 
-        total_tasks,
-        pending_tasks,
-        in_progress_tasks,
-        completed_tasks,
-        overdue_tasks,
-        due_today_tasks
+      total_tasks,
+      pending_tasks,
+      in_progress_tasks,
+      completed_tasks,
+      overdue_tasks,
+      due_today_tasks,
+      (pending_tasks + in_progress_tasks) AS not_completed_tasks,
+      CASE 
+        WHEN total_tasks > 0 THEN (completed_tasks::float / total_tasks) * 100
+        ELSE 0
+      END AS completion_rate
       FROM user_task_stats 
       WHERE user_id = ${userId}
     `;
@@ -243,6 +248,7 @@ export async function fetchUserTaskStats(userId: string): Promise<TaskStats> {
         overdue: 0,
         dueToday: 0,
         completionRate: 0,
+        notCompleted: 0,
       } as TaskStats;
     }
 
@@ -254,10 +260,8 @@ export async function fetchUserTaskStats(userId: string): Promise<TaskStats> {
       cancelled: 0, // Add this column to your view or calculate separately
       overdue: rawStats.overdue_tasks,
       dueToday: rawStats.due_today_tasks,
-      completionRate:
-        rawStats.total_tasks > 0
-          ? (rawStats.completed_tasks / rawStats.total_tasks) * 100
-          : 0,
+      completionRate: rawStats.completion_rate,
+      notCompleted: rawStats.not_completed_tasks,
     } as TaskStats;
   } catch (error) {
     console.error("Error fetching user task stats:", error);

@@ -1,11 +1,15 @@
-import { TodoApp } from "@/components/dashboard";
 import type { Metadata } from "next";
-import { getTodosByUser } from "@/lib/data";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { TaskHeader } from "@/components/tasks";
 import { Suspense } from "react";
-import { DashboardHeaderSkeleton } from "@/components/dashboard/skeletons";
+import {
+  DashboardCardSkeleton,
+  DashboardHeaderSkeleton,
+} from "@/components/dashboard/skeletons";
+import { AddTaskDialog } from "@/components/tasks/AddTaskDialog";
+import { TaskList } from "@/components/tasks/Task-List";
+import { User } from "@/types";
 
 export const metadata: Metadata = {
   title: "Mis Tareas - TaskFlow",
@@ -21,16 +25,20 @@ export default async function DashboardPage() {
 
   const userId = session.user.id;
 
-  const tasks = await getTodosByUser(userId);
-
   return (
     <div className="flex flex-col min-h-full">
-      <Suspense fallback={<DashboardHeaderSkeleton />}>
-        <TaskHeader />
-      </Suspense>
+      <nav className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-purple-100 dark:border-slate-700 sticky top-0 z-10 shadow-sm transition-colors duration-300">
+        <Suspense fallback={<DashboardHeaderSkeleton />}>
+          <TaskHeader user={session.user as User} />
+        </Suspense>
+      </nav>
 
-      <div className="flex-1">
-        <TodoApp tasks={tasks} />
+      <div className="flex-1 min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pb-20 transition-colors duration-300">
+        <AddTaskDialog user={userId} />
+
+        <Suspense fallback={<DashboardCardSkeleton />}>
+          <TaskList userId={userId} />
+        </Suspense>
       </div>
     </div>
   );

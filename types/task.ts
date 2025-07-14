@@ -86,6 +86,7 @@ export interface TaskStats {
   overdue: number
   dueToday: number
   completionRate: number
+  notCompleted: number
 }
 
 /** Vista de calendario de tareas */
