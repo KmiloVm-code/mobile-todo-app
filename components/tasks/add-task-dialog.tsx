@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import {
   Dialog,
@@ -6,56 +6,56 @@ import {
   DialogContent,
   DialogTitle,
   DialogHeader,
-} from "@/components/ui/dialog";
-import { Button } from "../ui/button";
-import { TaskForm } from "./task-form";
+} from '@/components/ui/dialog'
+import { Button } from '../ui/button'
+import { TaskForm } from './task-form'
 import type {
   TaskFormData,
   TaskWithUserData,
-} from "@/lib/validations/task-form";
-import { toast } from "sonner";
-import { createdTask } from "@/lib/queries/actions";
-import { useState } from "react";
+} from '@/lib/validations/task-form'
+import { toast } from 'sonner'
+import { createdTask } from '@/lib/queries/actions'
+import { useState } from 'react'
 
 interface AddTaskDialogProps {
-  user?: string;
+  user?: string
 }
 
 export function AddTaskDialog({ user }: AddTaskDialogProps) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
 
   const handleAddTask = async (data: TaskFormData) => {
     if (!user) {
-      toast.error("❌ Error de sesión", {
-        description: "No se pudo identificar al usuario.",
-      });
-      return;
+      toast.error('❌ Error de sesión', {
+        description: 'No se pudo identificar al usuario.',
+      })
+      return
     }
 
     const taskData: TaskWithUserData = {
       ...data,
-      userId: user || "",
-    };
+      userId: user || '',
+    }
     await createdTask(taskData)
       .then(() => {
-        toast.success("🎉 ¡Tarea agregada!", {
+        toast.success('🎉 ¡Tarea agregada!', {
           description: `La tarea "${data.title}" ha sido creada.`,
-        });
+        })
       })
       .catch((error) => {
-        console.error("Error al agregar tarea:", error);
-        toast.error("❌ Error al agregar la tarea", {
-          description: "Por favor, inténtalo de nuevo más tarde.",
-        });
+        console.error('Error al agregar tarea:', error)
+        toast.error('❌ Error al agregar la tarea', {
+          description: 'Por favor, inténtalo de nuevo más tarde.',
+        })
       })
       .finally(() => {
-        setOpen(false);
-      });
-  };
+        setOpen(false)
+      })
+  }
 
   const handleCancelAdd = () => {
-    setOpen(false);
-  };
+    setOpen(false)
+  }
 
   return (
     <div className="p-6">
@@ -88,5 +88,5 @@ export function AddTaskDialog({ user }: AddTaskDialogProps) {
         </DialogContent>
       </Dialog>
     </div>
-  );
+  )
 }

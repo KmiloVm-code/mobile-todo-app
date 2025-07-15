@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
-import { LoginForm } from "@/components/auth/login-form";
-import { Suspense } from "react";
+import type { Metadata } from 'next'
+import { LoginForm } from '@/components/auth/login-form'
+import { Suspense } from 'react'
 
 export const metadata: Metadata = {
-  title: "Iniciar Sesión - TaskFlow",
-  description: "Inicia sesión en tu cuenta de TaskFlow",
-};
+  title: 'Iniciar Sesión - TaskFlow',
+  description: 'Inicia sesión en tu cuenta de TaskFlow',
+}
 
 function LoginFormSkeleton() {
   return (
@@ -22,7 +22,7 @@ function LoginFormSkeleton() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 export default function LoginPage() {
@@ -30,5 +30,5 @@ export default function LoginPage() {
     <Suspense fallback={<LoginFormSkeleton />}>
       <LoginForm />
     </Suspense>
-  );
+  )
 }

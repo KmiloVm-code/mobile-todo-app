@@ -49,11 +49,29 @@ export interface ApiErrorResponse {
 
 /** Cliente HTTP genérico */
 export interface HttpClient {
-  get<T = unknown>(url: string, config?: RequestConfig): Promise<HttpResponse<T>>
-  post<T = unknown>(url: string, data?: unknown, config?: RequestConfig): Promise<HttpResponse<T>>
-  put<T = unknown>(url: string, data?: unknown, config?: RequestConfig): Promise<HttpResponse<T>>
-  patch<T = unknown>(url: string, data?: unknown, config?: RequestConfig): Promise<HttpResponse<T>>
-  delete<T = unknown>(url: string, config?: RequestConfig): Promise<HttpResponse<T>>
+  get<T = unknown>(
+    url: string,
+    config?: RequestConfig
+  ): Promise<HttpResponse<T>>
+  post<T = unknown>(
+    url: string,
+    data?: unknown,
+    config?: RequestConfig
+  ): Promise<HttpResponse<T>>
+  put<T = unknown>(
+    url: string,
+    data?: unknown,
+    config?: RequestConfig
+  ): Promise<HttpResponse<T>>
+  patch<T = unknown>(
+    url: string,
+    data?: unknown,
+    config?: RequestConfig
+  ): Promise<HttpResponse<T>>
+  delete<T = unknown>(
+    url: string,
+    config?: RequestConfig
+  ): Promise<HttpResponse<T>>
 }
 
 /** Interceptores de petición */
@@ -64,7 +82,9 @@ export interface RequestInterceptor {
 
 /** Interceptores de respuesta */
 export interface ResponseInterceptor {
-  onResponse?: <T>(response: HttpResponse<T>) => HttpResponse<T> | Promise<HttpResponse<T>>
+  onResponse?: <T>(
+    response: HttpResponse<T>
+  ) => HttpResponse<T> | Promise<HttpResponse<T>>
   onResponseError?: (error: ApiError) => Promise<never>
 }
 
@@ -142,7 +162,11 @@ export interface UseApiReturn<T = unknown> extends ApiLoadingState {
 export interface MutationConfig<TData = unknown, TVariables = unknown> {
   onSuccess?: (data: TData, variables: TVariables) => void
   onError?: (error: ApiError, variables: TVariables) => void
-  onSettled?: (data: TData | undefined, error: ApiError | null, variables: TVariables) => void
+  onSettled?: (
+    data: TData | undefined,
+    error: ApiError | null,
+    variables: TVariables
+  ) => void
 }
 
 /** Hook de mutation */

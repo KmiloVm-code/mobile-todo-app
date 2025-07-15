@@ -1,173 +1,173 @@
-"use client";
+'use client'
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
-import type { Task } from "@/types/task";
-import { TaskCard } from "./task-card";
-import { TaskFormData, TaskWithUserData } from "@/lib/validations";
-import { useState } from "react";
-import { completeTask, deleteTask, editedTask } from "@/lib/queries/actions";
-import { formatTaskDate } from "@/lib/utils/formatters";
-import { toast } from "sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Card, CardContent } from '@/components/ui/card'
+import type { Task } from '@/types/task'
+import { TaskCard } from './task-card'
+import { TaskFormData, TaskWithUserData } from '@/lib/validations'
+import { useState } from 'react'
+import { completeTask, deleteTask, editedTask } from '@/lib/queries/actions'
+import { formatTaskDate } from '@/lib/utils/formatters'
+import { toast } from 'sonner'
 
 interface TaskTabsProps {
-  tasks: Task[];
-  user?: string;
+  tasks: Task[]
+  user?: string
 }
 
 export function TaskTabs({ tasks, user }: TaskTabsProps) {
-  const [activeTab, setActiveTab] = useState("all");
-  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState('all')
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null)
   const [editingTaskData, setEditingTaskData] = useState<
     Partial<TaskFormData> | undefined
-  >(undefined);
+  >(undefined)
 
-  const pendingCount = tasks.filter((t) => t.status !== "completed").length;
-  const completedCount = tasks.filter((t) => t.status === "completed").length;
+  const pendingCount = tasks.filter((t) => t.status !== 'completed').length
+  const completedCount = tasks.filter((t) => t.status === 'completed').length
 
   const getFilteredTasks = () => {
     switch (activeTab) {
-      case "pending":
-        return tasks.filter((t) => t.status !== "completed");
-      case "completed":
-        return tasks.filter((t) => t.status === "completed");
+      case 'pending':
+        return tasks.filter((t) => t.status !== 'completed')
+      case 'completed':
+        return tasks.filter((t) => t.status === 'completed')
       default:
-        return tasks;
+        return tasks
     }
-  };
+  }
 
-  const filteredTasks = getFilteredTasks();
+  const filteredTasks = getFilteredTasks()
 
   const handleUpdateTask = async (data: TaskFormData) => {
     if (!user) {
-      toast.error("❌ Error de sesión");
-      return;
+      toast.error('❌ Error de sesión')
+      return
     }
 
     if (editingTaskId) {
       const taskData: TaskWithUserData = {
         ...data,
-        userId: user || "",
-      };
+        userId: user || '',
+      }
       await editedTask(editingTaskId, taskData)
         .then(() => {
-          toast.success("🔄 ¡Tarea actualizada!", {
+          toast.success('🔄 ¡Tarea actualizada!', {
             description: `Los cambios en "${data.title}" han sido guardados.`,
-          });
+          })
         })
         .catch((error) => {
-          console.error("Error al actualizar tarea:", error);
-          toast.error("❌ Error al actualizar la tarea", {
-            description: "Por favor, inténtalo de nuevo más tarde.",
-          });
+          console.error('Error al actualizar tarea:', error)
+          toast.error('❌ Error al actualizar la tarea', {
+            description: 'Por favor, inténtalo de nuevo más tarde.',
+          })
         })
         .finally(() => {
-          setEditingTaskId(null);
-          setEditingTaskData(undefined);
-        });
+          setEditingTaskId(null)
+          setEditingTaskData(undefined)
+        })
     }
-  };
+  }
 
   // Abrir diálogo de edición
   const handleEditTask = (taskId: string) => {
-    const task = tasks.find((t) => t.id === taskId);
+    const task = tasks.find((t) => t.id === taskId)
     if (task) {
       const taskData: Partial<TaskFormData> = {
         title: task.title,
-        description: task.description || "",
+        description: task.description || '',
         priority: task.priority,
         startDate: formatTaskDate(task.startDate),
         endDate: formatTaskDate(task.endDate),
-      };
-      setEditingTaskId(taskId);
-      setEditingTaskData(taskData);
+      }
+      setEditingTaskId(taskId)
+      setEditingTaskData(taskData)
     }
-  };
+  }
 
   // Cancelar edición
   const handleCancelEdit = () => {
-    setEditingTaskId(null);
-    setEditingTaskData(undefined);
-  };
+    setEditingTaskId(null)
+    setEditingTaskData(undefined)
+  }
 
   // Manejar toggle de tarea con notificación
   const handleToggleTask = async (taskId: string) => {
-    const task = tasks.find((t) => t.id === taskId);
+    const task = tasks.find((t) => t.id === taskId)
     if (task) {
-      const newStatus = task.status === "completed" ? "pending" : "completed";
+      const newStatus = task.status === 'completed' ? 'pending' : 'completed'
       await completeTask(taskId, newStatus)
         .then(() => {
-          toast.success("✅ Tarea actualizada", {
+          toast.success('✅ Tarea actualizada', {
             description: `La tarea "${task.title}" ha sido marcada como ${newStatus}.`,
-          });
+          })
         })
         .catch((error) => {
-          console.error("Error al actualizar tarea:", error);
-          toast.error("❌ Error al actualizar la tarea", {
-            description: "Por favor, inténtalo de nuevo más tarde.",
-          });
-        });
+          console.error('Error al actualizar tarea:', error)
+          toast.error('❌ Error al actualizar la tarea', {
+            description: 'Por favor, inténtalo de nuevo más tarde.',
+          })
+        })
     }
-  };
+  }
 
   // Manejar eliminación de tarea con notificación
   const handleDeleteTask = async (taskId: string) => {
-    const task = tasks.find((t) => t.id === taskId);
+    const task = tasks.find((t) => t.id === taskId)
     if (task) {
       await deleteTask(taskId)
         .then(() => {
-          toast.success("🗑️ Tarea eliminada", {
+          toast.success('🗑️ Tarea eliminada', {
             description: `La tarea "${task.title}" ha sido eliminada.`,
-          });
+          })
         })
         .catch((error) => {
-          console.error("Error al eliminar tarea:", error);
-          toast.error("❌ Error al eliminar la tarea", {
-            description: "Por favor, inténtalo de nuevo más tarde.",
-          });
+          console.error('Error al eliminar tarea:', error)
+          toast.error('❌ Error al eliminar la tarea', {
+            description: 'Por favor, inténtalo de nuevo más tarde.',
+          })
         })
         .finally(() => {
-          setEditingTaskId(null);
-          setEditingTaskData(undefined);
-        });
+          setEditingTaskId(null)
+          setEditingTaskData(undefined)
+        })
     }
-  };
+  }
 
   const tabConfigs = [
     {
-      value: "all",
-      label: "Todas",
-      emoji: "📝",
-      title: "¡Comienza tu día productivo!",
-      message: "Agrega tu primera tarea y organiza tu tiempo",
+      value: 'all',
+      label: 'Todas',
+      emoji: '📝',
+      title: '¡Comienza tu día productivo!',
+      message: 'Agrega tu primera tarea y organiza tu tiempo',
       gradient:
-        "data-[state=active]:from-purple-500 data-[state=active]:to-pink-500",
+        'data-[state=active]:from-purple-500 data-[state=active]:to-pink-500',
     },
     {
-      value: "pending",
-      label: "Pendientes",
-      emoji: "⏳",
-      title: "No hay tareas pendientes",
-      message: "¡Genial! No tienes tareas pendientes por hacer",
+      value: 'pending',
+      label: 'Pendientes',
+      emoji: '⏳',
+      title: 'No hay tareas pendientes',
+      message: '¡Genial! No tienes tareas pendientes por hacer',
       gradient:
-        "data-[state=active]:from-amber-400 data-[state=active]:to-orange-500",
+        'data-[state=active]:from-amber-400 data-[state=active]:to-orange-500',
     },
     {
-      value: "completed",
-      label: "Hechas",
-      emoji: "🎉",
-      title: "¡Buen trabajo!",
-      message: "Has completado todas tus tareas pendientes",
+      value: 'completed',
+      label: 'Hechas',
+      emoji: '🎉',
+      title: '¡Buen trabajo!',
+      message: 'Has completado todas tus tareas pendientes',
       gradient:
-        "data-[state=active]:from-emerald-400 data-[state=active]:to-teal-500",
+        'data-[state=active]:from-emerald-400 data-[state=active]:to-teal-500',
     },
-  ];
+  ]
 
   const getEmptyStateContent = () => {
     return (
       tabConfigs.find((config) => config.value === activeTab) || tabConfigs[0]
-    );
-  };
+    )
+  }
 
   return (
     <div className="flex flex-col px-5 sm:px-6">
@@ -190,11 +190,11 @@ export function TaskTabs({ tasks, user }: TaskTabsProps) {
                   className="inline-flex items-center justify-center min-w-[1.25rem] h-5 text-xs font-semibold rounded-full bg-white/20 mt-1 ml-1 px-1.5 transition-all duration-200 data-[state=active]:bg-white/30 data-[state=active]:text-white"
                   aria-label={`tareas ${tab.label}`}
                 >
-                  {tab.value === "all"
+                  {tab.value === 'all'
                     ? tasks.length
-                    : tab.value === "pending"
-                    ? pendingCount
-                    : completedCount}
+                    : tab.value === 'pending'
+                      ? pendingCount
+                      : completedCount}
                 </small>
               </div>
             </TabsTrigger>
@@ -238,5 +238,5 @@ export function TaskTabs({ tasks, user }: TaskTabsProps) {
         </TabsContent>
       </Tabs>
     </div>
-  );
+  )
 }

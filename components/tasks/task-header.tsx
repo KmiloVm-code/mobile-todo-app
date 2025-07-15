@@ -1,19 +1,19 @@
-"use server";
+'use server'
 
-import { Badge } from "@/components/ui/badge";
-import UserMenu from "@/components/profile/user-menu";
-import { fetchUserTaskStats } from "@/lib/queries/data";
-import { User } from "@/types";
+import { Badge } from '@/components/ui/badge'
+import UserMenu from '@/components/profile/user-menu'
+import { fetchUserTaskStats } from '@/lib/queries/data'
+import { User } from '@/types'
 
 interface TaskHeaderProps {
-  user: User;
+  user: User
 }
 
 export async function TaskHeader({ user }: TaskHeaderProps) {
-  const userId = user.id;
+  const userId = user.id
 
-  const taskStats = await fetchUserTaskStats(userId);
-  const pendingTasksCount = taskStats.notCompleted;
+  const taskStats = await fetchUserTaskStats(userId)
+  const pendingTasksCount = taskStats.notCompleted
 
   return (
     <div className="px-4 sm:px-6 py-4 sm:py-6">
@@ -24,8 +24,8 @@ export async function TaskHeader({ user }: TaskHeaderProps) {
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-1 truncate">
             {user
-              ? `¡Hola ${user.name.split(" ")[0]}! 👋`
-              : "Organiza tu día de manera inteligente"}
+              ? `¡Hola ${user.name.split(' ')[0]}! 👋`
+              : 'Organiza tu día de manera inteligente'}
           </p>
         </div>
         <div className="flex flex-row items-center gap-2 sm:gap-3 flex-shrink-0">
@@ -39,5 +39,5 @@ export async function TaskHeader({ user }: TaskHeaderProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

@@ -72,7 +72,13 @@ export interface TaskFilters {
 
 /** Ordenamiento de tareas */
 export interface TaskSorting {
-  field: 'createdAt' | 'updatedAt' | 'startDate' | 'endDate' | 'priority' | 'title'
+  field:
+    | 'createdAt'
+    | 'updatedAt'
+    | 'startDate'
+    | 'endDate'
+    | 'priority'
+    | 'title'
   direction: 'asc' | 'desc'
 }
 

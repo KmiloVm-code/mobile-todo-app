@@ -1,79 +1,79 @@
-"use server";
+'use server'
 
 import {
   TaskWithUserData,
   RegisterFormData,
   loginFormSchema,
-} from "@/lib/validations";
-import postgres from "postgres";
-import { revalidatePath } from "next/cache";
-import { signIn } from "@/auth/auth";
-import { AuthError } from "next-auth";
-import bcryptjs from "bcryptjs";
+} from '@/lib/validations'
+import postgres from 'postgres'
+import { revalidatePath } from 'next/cache'
+import { signIn } from '@/auth/auth'
+import { AuthError } from 'next-auth'
+import bcryptjs from 'bcryptjs'
 
 if (!process.env.POSTGRES_URL) {
-  throw new Error("POSTGRES_URL environment variable is not set");
+  throw new Error('POSTGRES_URL environment variable is not set')
 }
 
-const sql = postgres(process.env.POSTGRES_URL);
+const sql = postgres(process.env.POSTGRES_URL)
 
 export async function authenticate(
   _prevState: string | undefined,
   formData: FormData
 ): Promise<string | undefined> {
   try {
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
 
     const validatedFields = loginFormSchema.safeParse({
       email,
       password,
-    });
+    })
 
     if (!validatedFields.success) {
-      return "Invalid credentials";
+      return 'Invalid credentials'
     }
 
-    await signIn("credentials", formData);
-    return undefined;
+    await signIn('credentials', formData)
+    return undefined
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
-        case "CredentialsSignin":
-          return "Invalid credentials";
+        case 'CredentialsSignin':
+          return 'Invalid credentials'
         default:
-          return "Authentication failed";
+          return 'Authentication failed'
       }
     }
-    throw error;
+    throw error
   }
 }
 
 export async function registerUser(formData: RegisterFormData): Promise<void> {
-  const parsedData = loginFormSchema.safeParse(formData);
+  const parsedData = loginFormSchema.safeParse(formData)
   if (!parsedData.success) {
-    throw new Error("Invalid registration data");
+    throw new Error('Invalid registration data')
   }
 
-  const { email, password } = parsedData.data;
+  const { email, password } = parsedData.data
 
   // Check if user already exists
   const existingUser = await sql`
     SELECT * FROM users WHERE email = ${email}
-  `;
+  `
 
   if (existingUser.length > 0) {
-    throw new Error("User already exists");
+    throw new Error('User already exists')
   }
 
-  const hashedPassword = await bcryptjs.hash(password, 10);
+  const hashedPassword = await bcryptjs.hash(password, 10)
 
   await sql`
     INSERT INTO users (email, password_hash, name)
     VALUES (${email}, ${hashedPassword}, ${formData.name})
-  `;
+  `
 
-  revalidatePath("/dashboard");
+  revalidatePath('/dashboard')
 }
 
 export async function createdTask(task: TaskWithUserData): Promise<void> {
@@ -83,10 +83,10 @@ export async function createdTask(task: TaskWithUserData): Promise<void> {
       VALUES
       (
       ${task.userId}, ${task.title}, ${task.description ?? null}, ${
-    task.priority
-  }, ${task.startDate ?? null}, ${task.endDate ?? null})
-    `;
-  revalidatePath("/dashboard");
+        task.priority
+      }, ${task.startDate ?? null}, ${task.endDate ?? null})
+    `
+  revalidatePath('/dashboard')
 }
 
 export async function editedTask(
@@ -102,26 +102,26 @@ export async function editedTask(
         start_date = ${task.startDate ?? null},
         end_date = ${task.endDate ?? null}
       WHERE id = ${taskId}
-  `;
-  revalidatePath("/dashboard");
+  `
+  revalidatePath('/dashboard')
 }
 
 export async function deleteTask(taskId: string): Promise<void> {
   await sql`
       DELETE FROM tasks
       WHERE id = ${taskId}
-  `;
-  revalidatePath("/dashboard");
+  `
+  revalidatePath('/dashboard')
 }
 
 export async function completeTask(
   taskId: string,
-  status: "completed" | "pending"
+  status: 'completed' | 'pending'
 ): Promise<void> {
   await sql`
       UPDATE tasks
       SET status = ${status}
       WHERE id = ${taskId}
-  `;
-  revalidatePath("/dashboard");
+  `
+  revalidatePath('/dashboard')
 }

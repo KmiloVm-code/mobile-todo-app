@@ -47,33 +47,26 @@ export const VALIDATION_RULES = {
 // Opciones de selección
 export const TASK_PRIORITIES: readonly TaskPriority[] = [
   'low',
-  'medium', 
+  'medium',
   'high',
-  'urgent'
+  'urgent',
 ] as const
 
 export const TASK_STATUSES: readonly TaskStatus[] = [
   'pending',
   'in-progress',
   'completed',
-  'cancelled'
+  'cancelled',
 ] as const
 
-export const THEMES: readonly Theme[] = [
-  'light',
-  'dark',
-  'system'
-] as const
+export const THEMES: readonly Theme[] = ['light', 'dark', 'system'] as const
 
-export const LANGUAGES: readonly Language[] = [
-  'es',
-  'en'
-] as const
+export const LANGUAGES: readonly Language[] = ['es', 'en'] as const
 
 export const DEFAULT_VIEWS: readonly DefaultView[] = [
   'all',
   'pending',
-  'completed'
+  'completed',
 ] as const
 
 // Labels y textos
@@ -81,31 +74,31 @@ export const TASK_PRIORITY_LABELS: Record<TaskPriority, string> = {
   low: 'Baja',
   medium: 'Media',
   high: 'Alta',
-  urgent: 'Urgente'
+  urgent: 'Urgente',
 } as const
 
 export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
   pending: 'Pendiente',
   'in-progress': 'En progreso',
   completed: 'Completada',
-  cancelled: 'Cancelada'
+  cancelled: 'Cancelada',
 } as const
 
 export const THEME_LABELS: Record<Theme, string> = {
   light: 'Claro',
   dark: 'Oscuro',
-  system: 'Sistema'
+  system: 'Sistema',
 } as const
 
 export const LANGUAGE_LABELS: Record<Language, string> = {
   es: 'Español',
-  en: 'English'
+  en: 'English',
 } as const
 
 export const DEFAULT_VIEW_LABELS: Record<DefaultView, string> = {
   all: 'Todas',
   pending: 'Pendientes',
-  completed: 'Completadas'
+  completed: 'Completadas',
 } as const
 
 // Colores para prioridades
@@ -113,7 +106,7 @@ export const TASK_PRIORITY_COLORS: Record<TaskPriority, string> = {
   low: 'text-green-600 bg-green-50 border-green-200',
   medium: 'text-yellow-600 bg-yellow-50 border-yellow-200',
   high: 'text-orange-600 bg-orange-50 border-orange-200',
-  urgent: 'text-red-600 bg-red-50 border-red-200'
+  urgent: 'text-red-600 bg-red-50 border-red-200',
 } as const
 
 // Colores para estados
@@ -121,7 +114,7 @@ export const TASK_STATUS_COLORS: Record<TaskStatus, string> = {
   pending: 'text-gray-600 bg-gray-50 border-gray-200',
   'in-progress': 'text-blue-600 bg-blue-50 border-blue-200',
   completed: 'text-green-600 bg-green-50 border-green-200',
-  cancelled: 'text-red-600 bg-red-50 border-red-200'
+  cancelled: 'text-red-600 bg-red-50 border-red-200',
 } as const
 
 // Configuración por defecto

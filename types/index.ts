@@ -24,7 +24,7 @@ export type {
   TaskFormInput, // Renamed from TaskFormData to avoid conflict
   ProfileFormData,
   FormMessage,
-  SubmissionState
+  SubmissionState,
 } from './forms'
 
 // Re-export global utilities

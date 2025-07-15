@@ -21,12 +21,16 @@ declare global {
 
   // Extensión de window para PWA
   interface Window {
-    workbox: any
-    gtag: any
+    workbox: {
+      readonly registration: ServiceWorkerRegistration | undefined
+      readonly active: ServiceWorker | undefined
+      readonly ready: Promise<ServiceWorkerRegistration>
+    }
+    gtag: (...args: unknown[]) => void
     // Service Worker
-    __WB_MANIFEST: any
+    __WB_MANIFEST: unknown
     // Analytics
-    dataLayer: any[]
+    dataLayer: unknown[]
   }
 
   // Tipos para módulos CSS
@@ -88,17 +92,19 @@ declare global {
 }
 
 // Utilidades de tipos para componentes React
-export type ComponentRef<T extends keyof JSX.IntrinsicElements | React.JSXElementConstructor<any>> = 
-  T extends keyof JSX.IntrinsicElements
-    ? ElementRef<T>
-    : T extends React.JSXElementConstructor<infer P>
-    ? ElementRef<T>
+export type ComponentRef<
+  T extends keyof JSX.IntrinsicElements | React.JSXElementConstructor<unknown>,
+> = T extends keyof JSX.IntrinsicElements
+  ? ElementRef<T>
+  : T extends React.JSXElementConstructor<infer P>
+    ? ElementRef<P>
     : never
 
-export type ComponentProps<T extends keyof JSX.IntrinsicElements | React.JSXElementConstructor<any>> =
-  T extends keyof JSX.IntrinsicElements
-    ? ComponentPropsWithoutRef<T>
-    : T extends React.JSXElementConstructor<infer P>
+export type ComponentProps<
+  T extends keyof JSX.IntrinsicElements | React.JSXElementConstructor<unknown>,
+> = T extends keyof JSX.IntrinsicElements
+  ? ComponentPropsWithoutRef<T>
+  : T extends React.JSXElementConstructor<infer P>
     ? P
     : never
 
@@ -121,21 +127,28 @@ export type DeepRequired<T> = {
   [P in keyof T]-?: T[P] extends object ? DeepRequired<T[P]> : T[P]
 }
 
-export type PickRequired<T, K extends keyof T> = Pick<T, K> & { [P in K]-?: T[P] }
+export type PickRequired<T, K extends keyof T> = Pick<T, K> & {
+  [P in K]-?: T[P]
+}
 
 export type OmitStrict<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
 
 // Tipos de utilidad para arrays
-export type ArrayElement<ArrayType extends readonly unknown[]> = 
+export type ArrayElement<ArrayType extends readonly unknown[]> =
   ArrayType extends readonly (infer ElementType)[] ? ElementType : never
 
 export type NonEmptyArray<T> = [T, ...T[]]
 
 // Tipos de utilidad para funciones
-export type AsyncReturnType<T extends (...args: any) => Promise<any>> = 
-  T extends (...args: any) => Promise<infer R> ? R : never
+export type AsyncReturnType<
+  T extends (...args: unknown[]) => Promise<unknown>,
+> = T extends (...args: unknown[]) => Promise<infer R> ? R : never
 
-export type Parameters<T extends (...args: any) => any> = T extends (...args: infer P) => any ? P : never
+export type Parameters<T extends (...args: unknown[]) => unknown> = T extends (
+  ...args: infer P
+) => unknown
+  ? P
+  : never
 
 // Tipos de utilidad para objetos
 export type ValueOf<T> = T[keyof T]

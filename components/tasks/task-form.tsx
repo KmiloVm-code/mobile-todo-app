@@ -1,17 +1,17 @@
-"use client";
+'use client'
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select'
 import {
   Form,
   FormControl,
@@ -19,16 +19,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { taskFormSchema, type TaskFormData } from "@/lib/validations/task-form";
-import { formatTaskDate } from "@/lib/utils/formatters";
+} from '@/components/ui/form'
+import { taskFormSchema, type TaskFormData } from '@/lib/validations/task-form'
+import { formatTaskDate } from '@/lib/utils/formatters'
 
 interface TaskFormProps {
-  defaultValues?: Partial<TaskFormData>;
-  onSubmit: (data: TaskFormData) => void;
-  onCancel: () => void;
-  isEdit?: boolean;
-  isLoading?: boolean;
+  defaultValues?: Partial<TaskFormData>
+  onSubmit: (data: TaskFormData) => void
+  onCancel: () => void
+  isEdit?: boolean
+  isLoading?: boolean
 }
 
 export function TaskForm({
@@ -41,31 +41,31 @@ export function TaskForm({
   const form = useForm<TaskFormData>({
     resolver: zodResolver(taskFormSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      startDate: formatTaskDate(new Date()) || "",
-      endDate: "",
-      priority: "medium",
+      title: '',
+      description: '',
+      startDate: formatTaskDate(new Date()) || '',
+      endDate: '',
+      priority: 'medium',
       ...defaultValues,
     },
-  });
+  })
 
   const priorityOptions = [
-    { value: "low", label: "🟢 Baja", emoji: "🟢" },
-    { value: "medium", label: "🟡 Media", emoji: "🟡" },
-    { value: "high", label: "🔴 Alta", emoji: "🔴" },
-    { value: "urgent", label: "🚨 Urgente", emoji: "🚨" },
-  ] as const;
+    { value: 'low', label: '🟢 Baja', emoji: '🟢' },
+    { value: 'medium', label: '🟡 Media', emoji: '🟡' },
+    { value: 'high', label: '🔴 Alta', emoji: '🔴' },
+    { value: 'urgent', label: '🚨 Urgente', emoji: '🚨' },
+  ] as const
 
   const handleSubmit = (data: TaskFormData) => {
-    if (isLoading) return;
+    if (isLoading) return
     onSubmit({
       ...data,
-    });
+    })
     if (!isEdit) {
-      form.reset();
+      form.reset()
     }
-  };
+  }
 
   return (
     <Form {...form}>
@@ -162,12 +162,12 @@ export function TaskForm({
                     {...field}
                     className="w-full min-w-0 border-2 border-emerald-100 dark:border-emerald-800 focus:border-emerald-400 dark:focus:border-emerald-500 rounded-xl h-12 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100"
                     style={{
-                      fontSize: "14px !important",
-                      padding: "0 12px",
-                      height: "48px",
-                      lineHeight: "1.4",
-                      appearance: "none",
-                      WebkitAppearance: "none",
+                      fontSize: '14px !important',
+                      padding: '0 12px',
+                      height: '48px',
+                      lineHeight: '1.4',
+                      appearance: 'none',
+                      WebkitAppearance: 'none',
                     }}
                     disabled={isLoading}
                   />
@@ -189,15 +189,15 @@ export function TaskForm({
                   <Input
                     type="date"
                     {...field}
-                    min={form.watch("startDate") || undefined}
+                    min={form.watch('startDate') || undefined}
                     className="w-full min-w-0 border-2 border-rose-100 dark:border-rose-800 focus:border-rose-400 dark:focus:border-rose-500 rounded-xl h-12 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100"
                     style={{
-                      fontSize: "14px !important",
-                      padding: "0 12px",
-                      height: "48px",
-                      lineHeight: "1.4",
-                      appearance: "none",
-                      WebkitAppearance: "none",
+                      fontSize: '14px !important',
+                      padding: '0 12px',
+                      height: '48px',
+                      lineHeight: '1.4',
+                      appearance: 'none',
+                      WebkitAppearance: 'none',
                     }}
                     disabled={isLoading}
                   />
@@ -221,7 +221,7 @@ export function TaskForm({
               </div>
             ) : (
               <span className="flex items-center justify-center gap-2">
-                {isEdit ? "✨ Actualizar" : "🚀 Crear"} Tarea
+                {isEdit ? '✨ Actualizar' : '🚀 Crear'} Tarea
               </span>
             )}
           </Button>
@@ -238,5 +238,5 @@ export function TaskForm({
         </div>
       </form>
     </Form>
-  );
+  )
 }

@@ -1,15 +1,15 @@
-import type React from "react";
-import type { Metadata } from "next";
+import type React from 'react'
+import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: "Dashboard - TaskFlow",
-  description: "Gestiona tus tareas de manera eficiente",
-};
+  title: 'Dashboard - TaskFlow',
+  description: 'Gestiona tus tareas de manera eficiente',
+}
 
 export default async function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  return <>{children}</>;
+  return <>{children}</>
 }

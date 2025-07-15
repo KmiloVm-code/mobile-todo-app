@@ -1,13 +1,13 @@
-"use server";
+'use server'
 
-import postgres from "postgres";
-import { Task, TaskStats, User } from "@/types";
+import postgres from 'postgres'
+import { Task, TaskStats, User } from '@/types'
 
 if (!process.env.POSTGRES_URL) {
-  throw new Error("POSTGRES_URL environment variable is not set");
+  throw new Error('POSTGRES_URL environment variable is not set')
 }
 
-const sql = postgres(process.env.POSTGRES_URL);
+const sql = postgres(process.env.POSTGRES_URL)
 
 export async function getTodosByUser(userId: string): Promise<Task[]> {
   try {
@@ -33,9 +33,9 @@ export async function getTodosByUser(userId: string): Promise<Task[]> {
           WHEN status != 'completed' THEN created_at
         END DESC,
         completed_at DESC NULLS LAST;
-    `;
+    `
 
-    console.log(`Fetched ${todos.length} todos for user ${userId}`);
+    console.log(`Fetched ${todos.length} todos for user ${userId}`)
     return todos.map((todo) => ({
       id: todo.id,
       title: todo.title,
@@ -59,7 +59,7 @@ export async function getTodosByUser(userId: string): Promise<Task[]> {
             (
               tag: Pick<
                 { id: string; name: string; color: string },
-                "id" | "name" | "color"
+                'id' | 'name' | 'color'
               >
             ) => ({
               id: tag.id,
@@ -73,13 +73,13 @@ export async function getTodosByUser(userId: string): Promise<Task[]> {
             (
               att: Pick<
                 {
-                  id: string;
-                  name: string;
-                  url: string;
-                  type: string;
-                  size: number;
+                  id: string
+                  name: string
+                  url: string
+                  type: string
+                  size: number
                 },
-                "id" | "name" | "url" | "type" | "size"
+                'id' | 'name' | 'url' | 'type' | 'size'
               >
             ) => ({
               id: att.id,
@@ -95,13 +95,13 @@ export async function getTodosByUser(userId: string): Promise<Task[]> {
             (
               sub: Pick<
                 {
-                  id: string;
-                  title: string;
-                  completed: boolean;
-                  task_id: string;
-                  order: number;
+                  id: string
+                  title: string
+                  completed: boolean
+                  task_id: string
+                  order: number
                 },
-                "id" | "title" | "completed" | "task_id" | "order"
+                'id' | 'title' | 'completed' | 'task_id' | 'order'
               >
             ) => ({
               id: sub.id,
@@ -115,10 +115,10 @@ export async function getTodosByUser(userId: string): Promise<Task[]> {
       userId: todo.user_id,
       createdAt: todo.created_at,
       updatedAt: todo.updated_at,
-    })) as Task[];
+    })) as Task[]
   } catch (error) {
-    console.error("Error fetching todos:", error);
-    throw error;
+    console.error('Error fetching todos:', error)
+    throw error
   }
 }
 
@@ -127,13 +127,13 @@ export async function getUserById(userId: string) {
     const user = await sql`
       SELECT * FROM users 
       WHERE id = ${userId}
-    `;
+    `
 
-    console.log(`Fetched user with ID ${userId}:`, user);
-    return user[0] as unknown as User;
+    console.log(`Fetched user with ID ${userId}:`, user)
+    return user[0] as unknown as User
   } catch (error) {
-    console.error("Error fetching user:", error);
-    throw error;
+    console.error('Error fetching user:', error)
+    throw error
   }
 }
 
@@ -163,11 +163,11 @@ export async function fetchTasksWithDetails() {
           WHEN 'completed' THEN 3 
         END,
         due_date ASC NULLS LAST
-    `;
-    return tasks;
+    `
+    return tasks
   } catch (error) {
-    console.error("Error fetching tasks with details:", error);
-    throw error;
+    console.error('Error fetching tasks with details:', error)
+    throw error
   }
 }
 
@@ -177,12 +177,12 @@ export async function fetchTasksByStatus(status: string) {
       SELECT * FROM tasks_full 
       WHERE status = ${status}
       ORDER BY due_date ASC NULLS LAST
-    `;
-    console.log(`Fetched ${tasks.length} tasks with status ${status}`);
-    return tasks;
+    `
+    console.log(`Fetched ${tasks.length} tasks with status ${status}`)
+    return tasks
   } catch (error) {
-    console.error("Error fetching tasks by status:", error);
-    throw error;
+    console.error('Error fetching tasks by status:', error)
+    throw error
   }
 }
 
@@ -193,11 +193,11 @@ export async function fetchTaskCategories(userId: string) {
       FROM task_categories 
       WHERE user_id = ${userId} AND is_active = true
       ORDER BY name
-    `;
-    return categories;
+    `
+    return categories
   } catch (error) {
-    console.error("Error fetching task categories:", error);
-    throw error;
+    console.error('Error fetching task categories:', error)
+    throw error
   }
 }
 
@@ -208,11 +208,11 @@ export async function fetchTaskTags(userId: string) {
       FROM tags 
       WHERE user_id = ${userId}
       ORDER BY name
-    `;
-    return tags;
+    `
+    return tags
   } catch (error) {
-    console.error("Error fetching task tags:", error);
-    throw error;
+    console.error('Error fetching task tags:', error)
+    throw error
   }
 }
 
@@ -233,10 +233,10 @@ export async function fetchUserTaskStats(userId: string): Promise<TaskStats> {
       END AS completion_rate
       FROM user_task_stats 
       WHERE user_id = ${userId}
-    `;
+    `
 
-    console.log(`Fetched task stats for user ${userId}:`, stats);
-    const rawStats = stats[0];
+    console.log(`Fetched task stats for user ${userId}:`, stats)
+    const rawStats = stats[0]
 
     if (!rawStats) {
       return {
@@ -249,7 +249,7 @@ export async function fetchUserTaskStats(userId: string): Promise<TaskStats> {
         dueToday: 0,
         completionRate: 0,
         notCompleted: 0,
-      } as TaskStats;
+      } as TaskStats
     }
 
     return {
@@ -262,9 +262,9 @@ export async function fetchUserTaskStats(userId: string): Promise<TaskStats> {
       dueToday: rawStats.due_today_tasks,
       completionRate: rawStats.completion_rate,
       notCompleted: rawStats.not_completed_tasks,
-    } as TaskStats;
+    } as TaskStats
   } catch (error) {
-    console.error("Error fetching user task stats:", error);
-    throw error;
+    console.error('Error fetching user task stats:', error)
+    throw error
   }
 }

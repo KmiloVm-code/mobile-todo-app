@@ -1,4 +1,4 @@
-import { Skeleton } from "../ui/skeleton";
+import { Skeleton } from '../ui/skeleton'
 
 export function DashboardSkeleton() {
   return (
@@ -45,7 +45,7 @@ export function DashboardSkeleton() {
         ))}
       </div>
     </div>
-  );
+  )
 }
 
 export function DashboardHeaderSkeleton() {
@@ -62,7 +62,7 @@ export function DashboardHeaderSkeleton() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 export function DashboardCardSkeleton() {
@@ -96,5 +96,5 @@ export function DashboardCardSkeleton() {
         </div>
       ))}
     </div>
-  );
+  )
 }

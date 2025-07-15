@@ -54,7 +54,11 @@ export interface AuthState {
 /** Contexto de autenticación */
 export interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<boolean>
-  register: (name: string, email: string, password: string) => Promise<AuthResponse>
+  register: (
+    name: string,
+    email: string,
+    password: string
+  ) => Promise<AuthResponse>
   logout: () => void
   updatePreferences: (preferences: Partial<UserPreferences>) => void
   clearError: () => void

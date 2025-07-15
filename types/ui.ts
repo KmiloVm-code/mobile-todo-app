@@ -8,7 +8,14 @@ import type { ReactNode } from 'react'
 export type Size = 'sm' | 'md' | 'lg' | 'xl'
 
 /** Variantes de color/tema */
-export type Variant = 'default' | 'primary' | 'secondary' | 'destructive' | 'outline' | 'ghost' | 'link'
+export type Variant =
+  | 'default'
+  | 'primary'
+  | 'secondary'
+  | 'destructive'
+  | 'outline'
+  | 'ghost'
+  | 'link'
 
 /** Props base para componentes */
 export interface BaseComponentProps {

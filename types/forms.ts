@@ -29,7 +29,17 @@ export interface ValidationRules {
 export interface FormField<T = unknown> {
   name: string
   label: string
-  type: 'text' | 'email' | 'password' | 'number' | 'textarea' | 'select' | 'checkbox' | 'radio' | 'date' | 'file'
+  type:
+    | 'text'
+    | 'email'
+    | 'password'
+    | 'number'
+    | 'textarea'
+    | 'select'
+    | 'checkbox'
+    | 'radio'
+    | 'date'
+    | 'file'
   value: T
   defaultValue?: T
   placeholder?: string
@@ -91,8 +101,12 @@ export interface UseFormReturn<T = Record<string, unknown>> {
   setFieldValue: (name: keyof T, value: T[keyof T]) => void
   setFieldError: (name: keyof T, error?: string) => void
   setFieldTouched: (name: keyof T, touched?: boolean) => void
-  handleChange: (name: keyof T) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
-  handleBlur: (name: keyof T) => (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void
+  handleChange: (
+    name: keyof T
+  ) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
+  handleBlur: (
+    name: keyof T
+  ) => (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void
   handleSubmit: (e?: React.FormEvent) => void
   reset: (values?: Partial<T>) => void
   validate: () => boolean

@@ -1,26 +1,26 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+} from '@/components/ui/dialog'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select'
 import {
   LogOut,
   Bell,
@@ -32,60 +32,60 @@ import {
   Moon,
   Sun,
   Monitor,
-} from "lucide-react";
-import { signOut } from "next-auth/react";
-import { useTheme } from "next-themes";
-import { User } from "@/types";
+} from 'lucide-react'
+import { signOut } from 'next-auth/react'
+import { useTheme } from 'next-themes'
+import { User } from '@/types'
 
 interface UserMenuProps {
-  user: User | null;
+  user: User | null
 }
 
 export default function UserMenu({ user }: UserMenuProps) {
-  const { theme, setTheme } = useTheme();
-  const [showSettings, setShowSettings] = useState(false);
+  const { theme, setTheme } = useTheme()
+  const [showSettings, setShowSettings] = useState(false)
   const [preferences, setPreferences] = useState({
     notifications: true,
-    language: "es" as "es" | "en",
-    defaultView: "all" as "all" | "pending" | "completed",
-  });
+    language: 'es' as 'es' | 'en',
+    defaultView: 'all' as 'all' | 'pending' | 'completed',
+  })
 
   const handlePreferenceChange = (
     key: keyof typeof preferences,
-    value: any
+    value: boolean | 'es' | 'en' | 'all' | 'pending' | 'completed'
   ) => {
-    setPreferences((prev) => ({ ...prev, [key]: value }));
+    setPreferences((prev) => ({ ...prev, [key]: value }))
     // Aquí podrías hacer una llamada al servidor para guardar las preferencias
     // updateUserPreferences(key, value);
-  };
+  }
 
   const getThemeIcon = () => {
     switch (theme) {
-      case "light":
-        return <Sun className="w-5 h-5 text-amber-600" />;
-      case "dark":
-        return <Moon className="w-5 h-5 text-indigo-600" />;
+      case 'light':
+        return <Sun className="w-5 h-5 text-amber-600" />
+      case 'dark':
+        return <Moon className="w-5 h-5 text-indigo-600" />
       default:
-        return <Monitor className="w-5 h-5 text-slate-600" />;
+        return <Monitor className="w-5 h-5 text-slate-600" />
     }
-  };
+  }
 
   const handleSignOut = async () => {
     await signOut({
-      callbackUrl: "/login",
+      callbackUrl: '/login',
       redirect: true,
-    });
-  };
+    })
+  }
 
   // Generar iniciales del nombre
   const getInitials = (name: string | null | undefined) => {
-    if (!name) return "U";
+    if (!name) return 'U'
     return name
-      .split(" ")
+      .split(' ')
       .map((n) => n[0])
-      .join("")
-      .toUpperCase();
-  };
+      .join('')
+      .toUpperCase()
+  }
 
   return (
     <>
@@ -98,8 +98,8 @@ export default function UserMenu({ user }: UserMenuProps) {
           >
             <Avatar className="h-10 w-10 ring-2 ring-purple-200 dark:ring-purple-800">
               <AvatarImage
-                src={user?.avatar || ""}
-                alt={user?.name || "Usuario"}
+                src={user?.avatar || ''}
+                alt={user?.name || 'Usuario'}
               />
               <AvatarFallback className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold">
                 {getInitials(user?.name)}
@@ -122,8 +122,8 @@ export default function UserMenu({ user }: UserMenuProps) {
                 <div className="flex items-center gap-4">
                   <Avatar className="h-16 w-16 ring-4 ring-white dark:ring-slate-800 shadow-lg">
                     <AvatarImage
-                      src={user?.avatar || ""}
-                      alt={user?.name || "Usuario"}
+                      src={user?.avatar || ''}
+                      alt={user?.name || 'Usuario'}
                     />
                     <AvatarFallback className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold text-xl">
                       {getInitials(user?.name)}
@@ -131,7 +131,7 @@ export default function UserMenu({ user }: UserMenuProps) {
                   </Avatar>
                   <div className="flex-1">
                     <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100">
-                      {user?.name || "Usuario"}
+                      {user?.name || 'Usuario'}
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300 text-sm">
                       {user?.email}
@@ -165,7 +165,7 @@ export default function UserMenu({ user }: UserMenuProps) {
                     </div>
                     <Select
                       value={theme}
-                      onValueChange={(value: "light" | "dark" | "system") =>
+                      onValueChange={(value: 'light' | 'dark' | 'system') =>
                         setTheme(value)
                       }
                     >
@@ -226,7 +226,7 @@ export default function UserMenu({ user }: UserMenuProps) {
                     <Switch
                       checked={preferences.notifications}
                       onCheckedChange={(checked) =>
-                        handlePreferenceChange("notifications", checked)
+                        handlePreferenceChange('notifications', checked)
                       }
                     />
                   </div>
@@ -252,8 +252,8 @@ export default function UserMenu({ user }: UserMenuProps) {
                     </div>
                     <Select
                       value={preferences.language}
-                      onValueChange={(value: "es" | "en") =>
-                        handlePreferenceChange("language", value)
+                      onValueChange={(value: 'es' | 'en') =>
+                        handlePreferenceChange('language', value)
                       }
                     >
                       <SelectTrigger className="w-24 h-8 rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
@@ -291,8 +291,8 @@ export default function UserMenu({ user }: UserMenuProps) {
                     </div>
                     <Select
                       value={preferences.defaultView}
-                      onValueChange={(value: "all" | "pending" | "completed") =>
-                        handlePreferenceChange("defaultView", value)
+                      onValueChange={(value: 'all' | 'pending' | 'completed') =>
+                        handlePreferenceChange('defaultView', value)
                       }
                     >
                       <SelectTrigger className="w-32 h-8 rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
@@ -361,5 +361,5 @@ export default function UserMenu({ user }: UserMenuProps) {
         </DialogContent>
       </Dialog>
     </>
-  );
+  )
 }

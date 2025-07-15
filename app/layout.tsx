@@ -1,34 +1,34 @@
-import type React from "react";
-import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
-import { ThemeProvider } from "next-themes";
-import { SessionProvider } from "next-auth/react";
-import { Toaster } from "../components/ui/sonner";
-import { NotchHandler } from "../components/theme/notch-handler";
-import "./globals.css";
-import { Analytics } from "@vercel/analytics/next";
+import type React from 'react'
+import type { Metadata, Viewport } from 'next'
+import { Inter } from 'next/font/google'
+import { ThemeProvider } from 'next-themes'
+import { SessionProvider } from 'next-auth/react'
+import { Toaster } from '../components/ui/sonner'
+import { NotchHandler } from '../components/theme/notch-handler'
+import './globals.css'
+import { Analytics } from '@vercel/analytics/next'
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: "Mobile Todo App",
-  description: "Una aplicación de tareas simple y eficiente",
-  manifest: "/manifest.json",
-};
+  title: 'Mobile Todo App',
+  description: 'Una aplicación de tareas simple y eficiente',
+  manifest: '/manifest.json',
+}
 
 export const viewport: Viewport = {
-  width: "device-width",
+  width: 'device-width',
   initialScale: 1,
   minimumScale: 1,
   maximumScale: 1,
   userScalable: false,
-  viewportFit: "cover",
-};
+  viewportFit: 'cover',
+}
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   return (
     <html lang="es" suppressHydrationWarning className="mobile-viewport">
@@ -45,5 +45,5 @@ export default function RootLayout({
         </SessionProvider>
       </body>
     </html>
-  );
+  )
 }

@@ -37,9 +37,9 @@ export function isTaskStatus(value: string): value is TaskStatus {
 // Validadores de objetos complejos
 export function isValidTask(obj: unknown): obj is Task {
   if (typeof obj !== 'object' || obj === null) return false
-  
+
   const task = obj as Record<string, unknown>
-  
+
   return (
     typeof task.id === 'string' &&
     typeof task.title === 'string' &&
@@ -56,9 +56,9 @@ export function isValidTask(obj: unknown): obj is Task {
 
 export function isValidUser(obj: unknown): obj is User {
   if (typeof obj !== 'object' || obj === null) return false
-  
+
   const user = obj as Record<string, unknown>
-  
+
   return (
     typeof user.id === 'string' &&
     typeof user.name === 'string' &&

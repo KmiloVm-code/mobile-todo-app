@@ -1,29 +1,29 @@
-import type { Metadata } from "next";
-import { auth } from "@/auth/auth";
-import { redirect } from "next/navigation";
-import { TaskHeader } from "@/components/tasks";
-import { Suspense } from "react";
+import type { Metadata } from 'next'
+import { auth } from '@/auth/auth'
+import { redirect } from 'next/navigation'
+import { TaskHeader } from '@/components/tasks'
+import { Suspense } from 'react'
 import {
   DashboardCardSkeleton,
   DashboardHeaderSkeleton,
-} from "@/components/dashboard/skeletons";
-import { AddTaskDialog } from "@/components/tasks/add-task-dialog";
-import { TaskList } from "@/components/tasks/Task-List";
-import { User } from "@/types";
+} from '@/components/dashboard/skeletons'
+import { AddTaskDialog } from '@/components/tasks/add-task-dialog'
+import { TaskList } from '@/components/tasks/Task-List'
+import { User } from '@/types'
 
 export const metadata: Metadata = {
-  title: "Mis Tareas - TaskFlow",
-  description: "Gestiona y organiza todas tus tareas",
-};
+  title: 'Mis Tareas - TaskFlow',
+  description: 'Gestiona y organiza todas tus tareas',
+}
 
 export default async function DashboardPage() {
-  const session = await auth();
+  const session = await auth()
 
   if (!session?.user || !session.user.id) {
-    redirect("/login");
+    redirect('/login')
   }
 
-  const userId = session.user.id;
+  const userId = session.user.id
 
   return (
     <div className="flex flex-col min-h-full">
@@ -41,5 +41,5 @@ export default async function DashboardPage() {
         </Suspense>
       </div>
     </div>
-  );
+  )
 }

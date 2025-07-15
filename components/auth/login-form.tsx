@@ -1,26 +1,26 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Eye, EyeOff, Mail, Lock, Sparkles, AlertCircle } from "lucide-react";
-import { useActionState } from "react";
-import { authenticate } from "@/lib/queries/actions";
-import { useSearchParams } from "next/navigation";
+import { useState } from 'react'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Eye, EyeOff, Mail, Lock, Sparkles, AlertCircle } from 'lucide-react'
+import { useActionState } from 'react'
+import { authenticate } from '@/lib/queries/actions'
+import { useSearchParams } from 'next/navigation'
 
 export function LoginForm() {
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false)
 
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
 
   const [errorMessage, formAction, isPending] = useActionState(
     authenticate,
     undefined
-  );
+  )
 
   return (
     <div className="w-full max-w-md mx-auto">
@@ -82,7 +82,7 @@ export function LoginForm() {
                 <Input
                   id="password"
                   name="password"
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   placeholder="Tu contraseña"
                   className="pl-12 pr-12 h-14 border-2 border-purple-100 dark:border-purple-800 focus:border-purple-400 dark:focus:border-purple-500 rounded-xl text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 bg-white dark:bg-slate-800"
                   required
@@ -117,7 +117,7 @@ export function LoginForm() {
                   Iniciando sesión...
                 </div>
               ) : (
-                "✨ Iniciar Sesión"
+                '✨ Iniciar Sesión'
               )}
             </Button>
 
@@ -137,7 +137,7 @@ export function LoginForm() {
 
           <div className="mt-8 text-center">
             <p className="text-slate-500 dark:text-slate-400">
-              ¿No tienes cuenta?{" "}
+              ¿No tienes cuenta?{' '}
               <Link
                 href="/register"
                 className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-semibold hover:underline transition-colors"
@@ -160,5 +160,5 @@ export function LoginForm() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }
