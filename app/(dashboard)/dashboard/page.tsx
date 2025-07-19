@@ -10,6 +10,7 @@ import {
 import { AddTaskDialog } from '@/components/tasks/add-task-dialog'
 import { TaskList } from '@/components/tasks/Task-List'
 import { User } from '@/types'
+import { fetchUserTaskStats } from '@/lib/queries/data'
 
 export const metadata: Metadata = {
   title: 'Mis Tareas - TaskFlow',
@@ -19,27 +20,28 @@ export const metadata: Metadata = {
 export default async function DashboardPage() {
   const session = await auth()
 
-  if (!session?.user || !session.user.id) {
+  if (!session?.user?.id) {
     redirect('/login')
+    return null
   }
 
   const userId = session.user.id
+  const [taskStats] = await Promise.all([fetchUserTaskStats(userId)])
 
   return (
     <div className="flex flex-col min-h-full">
       <nav className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-purple-100 dark:border-slate-700 sticky top-0 z-10 shadow-sm transition-colors duration-300">
         <Suspense fallback={<DashboardHeaderSkeleton />}>
-          <TaskHeader user={session.user as User} />
+          <TaskHeader user={session.user as User} stats={taskStats} />
         </Suspense>
       </nav>
 
-      <div className="flex-1 min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pb-20 transition-colors duration-300">
+      <main className="flex-1 min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pb-20 transition-colors duration-300">
         <AddTaskDialog user={userId} />
-
         <Suspense fallback={<DashboardCardSkeleton />}>
-          <TaskList userId={userId} />
+          <TaskList userId={userId} stats={taskStats} />
         </Suspense>
-      </div>
+      </main>
     </div>
   )
 }

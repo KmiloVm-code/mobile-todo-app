@@ -2,7 +2,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent } from '@/components/ui/card'
-import type { Task } from '@/types/task'
+import type { Task, TaskStats } from '@/types'
 import { TaskCard } from './task-card'
 import { TaskFormData, TaskWithUserData } from '@/lib/validations'
 import { useState } from 'react'
@@ -12,18 +12,16 @@ import { toast } from 'sonner'
 
 interface TaskTabsProps {
   tasks: Task[]
-  user?: string
+  userId: string
+  stats: TaskStats
 }
 
-export function TaskTabs({ tasks, user }: TaskTabsProps) {
+export function TaskTabs({ tasks, userId, stats }: TaskTabsProps) {
   const [activeTab, setActiveTab] = useState('all')
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null)
   const [editingTaskData, setEditingTaskData] = useState<
     Partial<TaskFormData> | undefined
   >(undefined)
-
-  const pendingCount = tasks.filter((t) => t.status !== 'completed').length
-  const completedCount = tasks.filter((t) => t.status === 'completed').length
 
   const getFilteredTasks = () => {
     switch (activeTab) {
@@ -39,7 +37,7 @@ export function TaskTabs({ tasks, user }: TaskTabsProps) {
   const filteredTasks = getFilteredTasks()
 
   const handleUpdateTask = async (data: TaskFormData) => {
-    if (!user) {
+    if (!userId) {
       toast.error('❌ Error de sesión')
       return
     }
@@ -47,7 +45,7 @@ export function TaskTabs({ tasks, user }: TaskTabsProps) {
     if (editingTaskId) {
       const taskData: TaskWithUserData = {
         ...data,
-        userId: user || '',
+        userId: userId || '',
       }
       await editedTask(editingTaskId, taskData)
         .then(() => {
@@ -191,10 +189,8 @@ export function TaskTabs({ tasks, user }: TaskTabsProps) {
                   aria-label={`tareas ${tab.label}`}
                 >
                   {tab.value === 'all'
-                    ? tasks.length
-                    : tab.value === 'pending'
-                      ? pendingCount
-                      : completedCount}
+                    ? (stats.total ?? 0)
+                    : (stats[tab.value as keyof typeof stats] ?? 0)}
                 </small>
               </div>
             </TabsTrigger>

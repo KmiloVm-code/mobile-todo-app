@@ -2,19 +2,14 @@
 
 import { Badge } from '@/components/ui/badge'
 import UserMenu from '@/components/profile/user-menu'
-import { fetchUserTaskStats } from '@/lib/queries/data'
-import { User } from '@/types'
+import { User, TaskStats } from '@/types'
 
 interface TaskHeaderProps {
   user: User
+  stats: TaskStats
 }
 
-export async function TaskHeader({ user }: TaskHeaderProps) {
-  const userId = user.id
-
-  const taskStats = await fetchUserTaskStats(userId)
-  const pendingTasksCount = taskStats.notCompleted
-
+export async function TaskHeader({ user, stats }: TaskHeaderProps) {
   return (
     <div className="px-4 sm:px-6 py-4 sm:py-6">
       <div className="flex items-start sm:items-center justify-between gap-3">
@@ -33,7 +28,7 @@ export async function TaskHeader({ user }: TaskHeaderProps) {
             variant="secondary"
             className="bg-gradient-to-r from-emerald-100 to-teal-100 dark:from-emerald-900/30 dark:to-teal-900/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 px-2 sm:px-3 py-1 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap"
           >
-            {pendingTasksCount} pendientes
+            {stats.notCompleted} pendientes
           </Badge>
           <UserMenu user={user} />
         </div>
