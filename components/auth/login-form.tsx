@@ -15,7 +15,8 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
 
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
+  const callbackUrl =
+    searchParams.get('callbackUrl') || '/dashboard?filter=all&page=1'
 
   const [errorMessage, formAction, isPending] = useActionState(
     authenticate,

@@ -9,11 +9,44 @@ if (!process.env.POSTGRES_URL) {
 
 const sql = postgres(process.env.POSTGRES_URL)
 
-export async function getTodosByUser(userId: string): Promise<Task[]> {
+export async function getTodosByUser(
+  userId: string,
+  status: string,
+  page: number = 1,
+  pageSize: number = 10
+): Promise<Task[]> {
   try {
+    const offset = (page - 1) * pageSize
+
+    let statusCondition = sql``
+    switch (status) {
+      case 'notCompleted':
+        statusCondition = sql`AND status NOT IN ('completed', 'cancelled')`
+        break
+      case 'completed':
+      case 'cancelled':
+        statusCondition = sql`AND status = ${status}`
+        break
+      case 'all':
+        break
+      default:
+        statusCondition = sql`AND status = ${status}`
+        break
+    }
+
+    const countResult = await sql`
+    SELECT COUNT(*)::int AS total
+    FROM tasks
+    WHERE user_id = ${userId}
+    ${statusCondition}
+  `
+    const totalItems = countResult[0]?.total || 0
+    const totalPages = Math.ceil(totalItems / pageSize)
+
     const todos = await sql`
       SELECT * FROM tasks 
       WHERE user_id = ${userId}
+      ${statusCondition}
       ORDER BY 
         (status = 'completed') ASC,
         CASE 
@@ -32,7 +65,8 @@ export async function getTodosByUser(userId: string): Promise<Task[]> {
         CASE 
           WHEN status != 'completed' THEN created_at
         END DESC,
-        completed_at DESC NULLS LAST;
+        completed_at DESC NULLS LAST
+        LIMIT ${pageSize} OFFSET ${offset};
     `
 
     console.log(`Fetched ${todos.length} todos for user ${userId}`)
@@ -115,6 +149,10 @@ export async function getTodosByUser(userId: string): Promise<Task[]> {
       userId: todo.user_id,
       createdAt: todo.created_at,
       updatedAt: todo.updated_at,
+      page: page,
+      pageSize: pageSize,
+      totalPages: totalPages,
+      totalItems: totalItems,
     })) as Task[]
   } catch (error) {
     console.error('Error fetching todos:', error)

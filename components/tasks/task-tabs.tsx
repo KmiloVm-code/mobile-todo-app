@@ -9,6 +9,7 @@ import { useState } from 'react'
 import { completeTask, deleteTask, editedTask } from '@/lib/queries/actions'
 import { formatTaskDate } from '@/lib/utils/formatters'
 import { toast } from 'sonner'
+import { useSearchParams, usePathname, useRouter } from 'next/navigation'
 
 interface TaskTabsProps {
   tasks: Task[]
@@ -17,24 +18,24 @@ interface TaskTabsProps {
 }
 
 export function TaskTabs({ tasks, userId, stats }: TaskTabsProps) {
-  const [activeTab, setActiveTab] = useState('all')
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null)
   const [editingTaskData, setEditingTaskData] = useState<
     Partial<TaskFormData> | undefined
   >(undefined)
+  const searchParams = useSearchParams()
+  const pathname = usePathname()
+  const { replace } = useRouter()
 
-  const getFilteredTasks = () => {
-    switch (activeTab) {
-      case 'pending':
-        return tasks.filter((t) => t.status !== 'completed')
-      case 'completed':
-        return tasks.filter((t) => t.status === 'completed')
-      default:
-        return tasks
+  const handleFilter = (term: string) => {
+    const params = new URLSearchParams(searchParams)
+    if (term) {
+      params.set('filter', term)
+    } else {
+      params.delete('filter')
     }
+    params.set('page', '1')
+    replace(`${pathname}?${params.toString()}`)
   }
-
-  const filteredTasks = getFilteredTasks()
 
   const handleUpdateTask = async (data: TaskFormData) => {
     if (!userId) {
@@ -142,7 +143,7 @@ export function TaskTabs({ tasks, userId, stats }: TaskTabsProps) {
         'data-[state=active]:from-purple-500 data-[state=active]:to-pink-500',
     },
     {
-      value: 'pending',
+      value: 'notCompleted',
       label: 'Pendientes',
       emoji: '⏳',
       title: 'No hay tareas pendientes',
@@ -161,15 +162,13 @@ export function TaskTabs({ tasks, userId, stats }: TaskTabsProps) {
     },
   ]
 
-  const getEmptyStateContent = () => {
-    return (
-      tabConfigs.find((config) => config.value === activeTab) || tabConfigs[0]
-    )
-  }
-
   return (
     <div className="flex flex-col px-5 sm:px-6">
-      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value)}>
+      <Tabs
+        value={searchParams.get('filter')?.toString()}
+        onValueChange={(value) => handleFilter(value)}
+        className="w-full"
+      >
         <TabsList className="grid w-full h-full grid-cols-3 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl p-2 shadow-sm border border-purple-100 dark:border-slate-700">
           {tabConfigs.map((tab) => (
             <TabsTrigger
@@ -197,25 +196,38 @@ export function TaskTabs({ tasks, userId, stats }: TaskTabsProps) {
           ))}
         </TabsList>
 
-        <TabsContent value={activeTab} className="mt-6 space-y-4">
-          {filteredTasks.length === 0 ? (
+        <TabsContent
+          value={searchParams.get('filter')?.toString() || 'all'}
+          className="mt-6 space-y-4"
+        >
+          {tasks.length === 0 ? (
             <Card className="border-0 shadow-lg rounded-2xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm">
               <CardContent className="p-12 text-center">
-                <div className="text-4xl mb-4">
-                  <span role="img" aria-label={getEmptyStateContent()?.emoji}>
-                    {getEmptyStateContent()?.emoji}
-                  </span>
-                </div>
-                <h2 className="text-xl font-semibold mb-2">
-                  {getEmptyStateContent()?.title}
-                </h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
-                  {getEmptyStateContent()?.message}
-                </p>
+                {(() => {
+                  const currentTab =
+                    tabConfigs.find(
+                      (tab) => tab.value === searchParams.get('filter')
+                    ) || tabConfigs[0]
+                  return (
+                    <>
+                      <div className="text-4xl mb-4">
+                        <span role="img" aria-label="empty state">
+                          {currentTab?.emoji}
+                        </span>
+                      </div>
+                      <h2 className="text-xl font-semibold mb-2">
+                        {currentTab?.title}
+                      </h2>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+                        {currentTab?.message}
+                      </p>
+                    </>
+                  )
+                })()}
               </CardContent>
             </Card>
           ) : (
-            filteredTasks.map((task) => (
+            tasks.map((task) => (
               <TaskCard
                 key={task.id}
                 task={task}

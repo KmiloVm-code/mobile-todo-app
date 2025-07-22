@@ -17,14 +17,24 @@ export const authConfig = {
       )
 
       // Root redirect logic
-      if (pathname === '/') {
-        const redirectUrl = isLoggedIn ? '/dashboard' : '/login'
-        return Response.redirect(new URL(redirectUrl, nextUrl))
+      if (pathname === '/' || pathname === '/dashboard') {
+        if (isLoggedIn) {
+          if (
+            pathname === '/dashboard' &&
+            !nextUrl.searchParams.has('filter')
+          ) {
+            return Response.redirect(
+              new URL('/dashboard?filter=all&page=1', nextUrl)
+            )
+          }
+        } else {
+          return Response.redirect(new URL('/login', nextUrl))
+        }
       }
 
       // Redirect authenticated users away from public pages
       if (isLoggedIn && isOnPublicPage) {
-        return Response.redirect(new URL('/dashboard', nextUrl))
+        return Response.redirect(new URL('/dashboard?filter=all', nextUrl))
       }
 
       // Block unauthenticated users from protected pages

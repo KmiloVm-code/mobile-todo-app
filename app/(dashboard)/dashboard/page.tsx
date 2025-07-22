@@ -17,7 +17,17 @@ export const metadata: Metadata = {
   description: 'Gestiona y organiza todas tus tareas',
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams?: {
+    filter?: string
+    page?: string
+  }
+}) {
+  const status = searchParams?.filter || 'all'
+  const currentPage = Number(searchParams?.page) || 1
+
   const session = await auth()
 
   if (!session?.user?.id) {
@@ -36,10 +46,18 @@ export default async function DashboardPage() {
         </Suspense>
       </nav>
 
-      <main className="flex-1 min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pb-20 transition-colors duration-300">
+      <main className="flex-1 min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pb-12 transition-colors duration-300">
         <AddTaskDialog user={userId} />
-        <Suspense fallback={<DashboardCardSkeleton />}>
-          <TaskList userId={userId} stats={taskStats} />
+        <Suspense
+          key={status + currentPage}
+          fallback={<DashboardCardSkeleton />}
+        >
+          <TaskList
+            userId={userId}
+            stats={taskStats}
+            status={status}
+            page={currentPage}
+          />
         </Suspense>
       </main>
     </div>

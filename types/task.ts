@@ -39,6 +39,10 @@ export interface Task extends BaseEntity {
   attachments?: TaskAttachment[]
   createdAt: string
   updatedAt: string
+  page?: number
+  pageSize?: number
+  totalPages?: number
+  totalItems?: number
 }
 
 /** Subtarea */

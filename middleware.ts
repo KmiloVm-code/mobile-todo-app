@@ -8,5 +8,7 @@ export const config = {
   matcher: [
     '/((?!api|_next/static|_next/image|favicon.ico|manifest.json|icon-.*|screenshot-.*|sw.js|browserconfig.xml).*)',
     '/',
+    '/dashboard',
+    '/dashboard/(.*)',
   ],
 }
